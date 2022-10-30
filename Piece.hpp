@@ -29,6 +29,10 @@ public:
 
     PieceColor color() const;
     PieceType type() const;
+
+private:
+    PieceColor piece_color_;
+    PieceType piece_type_;
 };
 
 bool operator==(const Piece& lhs, const Piece& rhs);
