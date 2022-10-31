@@ -130,3 +130,6 @@ bool operator<(const Square& lhs, const Square& rhs) {
 bool operator==(const Square& lhs, const Square& rhs) {
     return lhs.index() == rhs.index();
 }
+bool operator !=(const Square& lhs, const Square& rhs) {
+    return !(lhs.index() == rhs.index());
+}

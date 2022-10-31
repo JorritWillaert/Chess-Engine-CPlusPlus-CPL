@@ -51,6 +51,8 @@ Move::Optional Move::fromUci(const std::string& uci) {
             case 'n':
                 promotion = PieceType::Knight;
                 break;
+            default:
+                return std::nullopt;
         }
         return Move(fromSquare, toSquare, promotion);
     } else {
@@ -59,19 +61,37 @@ Move::Optional Move::fromUci(const std::string& uci) {
 }
 
 Square Move::from() const {
-    return Square::A1;
+    return from_;
 }
 
 Square Move::to() const {
-    return Square::A1;
+    return to_;
 }
 
 std::optional<PieceType> Move::promotion() const {
-    return std::nullopt;
+    return promotion_;
 }
 
 std::ostream& operator<<(std::ostream& os, const Move& move) {
-    (void)move;
+    os << move.from() << move.to();
+    if (move.promotion().has_value()) {
+        switch (move.promotion().value()) {
+            case PieceType::Queen:
+                os << 'q';
+                break;
+            case PieceType::Rook:
+                os << 'r';
+                break;
+            case PieceType::Bishop:
+                os << 'b';
+                break;
+            case PieceType::Knight:
+                os << 'n';
+                break;
+            default: 
+                break;
+        }
+    }
     return os;
 }
 
@@ -83,7 +103,14 @@ bool operator<(const Move& lhs, const Move& rhs) {
 }
 
 bool operator==(const Move& lhs, const Move& rhs) {
-    (void)lhs;
-    (void)rhs;
-    return false;
+    if (lhs.from() != rhs.from() || lhs.to() != rhs.to()) {
+        return false;
+    }
+    if (lhs.promotion().has_value() != rhs.promotion().has_value()) {
+        return false;
+    }
+    if (lhs.promotion().has_value()) { /* Both have a promotion value */
+        return lhs.promotion().value() == rhs.promotion().value();
+    }
+    return true;
 }
