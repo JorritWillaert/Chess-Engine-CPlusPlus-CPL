@@ -4,10 +4,31 @@
 #include <cassert>
 #include <cmath>
 
+enum class BitMapType {
+    PawnWhite,
+    PawnBlack,
+    RookWhite,
+    RookBlack,
+    BishopWhite,
+    BishopBlack,
+    KnightWhite,
+    KnightBlack,
+    QueenWhite,
+    QueenBlack,
+    KingWhite,
+    KingBlack
+}
+
+void initialize_all_bitmaps() {
+    for (int i = 0; i < 12; i++) {
+        all_bitmaps_[i] = 0;
+    }
+}
+
 Board::Board()
-    : pawn_white_(0), pawn_black_(0), rook_white_(0), rook_black_(0),
-      bishop_white_(0), bishop_black_(0), knight_white_(0), knight_black_(0),
-      queen_white_(0), queen_black_(0), king_white_(0), king_black_(0) {}
+{
+    initialize_all_bitmaps();
+}
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
     (void)square;
