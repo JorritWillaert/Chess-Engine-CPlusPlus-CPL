@@ -32,6 +32,7 @@ public:
 private:
 
     Square(Index index);
+    unsigned index_;
 };
 
 std::ostream& operator<<(std::ostream& os, const Square& square);

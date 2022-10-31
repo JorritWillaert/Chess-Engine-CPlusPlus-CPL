@@ -3,36 +3,42 @@
 #include <ostream>
 
 Square::Square(Index index)
-{
-    (void)index;
-}
+    : index_(index)
+{}
 
 Square::Optional Square::fromCoordinates(Coordinate file, Coordinate rank) {
-    (void)file;
-    (void)rank;
-    return std::nullopt;
+    if (file >= 8 || rank >= 8) {
+        return std::nullopt;
+    }
+    return Square(rank * 8 + file);
 }
 
 Square::Optional Square::fromIndex(Index index) {
-    (void)index;
-    return std::nullopt;
+    if (index >= 64) {
+        return std::nullopt;
+    }
+    return Square(index);
 }
 
 Square::Optional Square::fromName(const std::string& name) {
-    (void)name;
-    return std::nullopt;
+    if (name.size() != 2 || name[0] < 'a' || name[0] > 'h' || name[1] < '1' || name[1] > '8') {
+        return std::nullopt;
+    }
+    Coordinate file = name[0] - 'a';
+    Coordinate rank = name[1] - '1';
+    return Square::fromCoordinates(file, rank);
 }
 
 Square::Coordinate Square::file() const {
-    return 0;
+    return index_ % 8; 
 }
 
 Square::Coordinate Square::rank() const {
-    return 0;
+    return index_ / 8;
 }
 
 Square::Index Square::index() const {
-    return 0;
+    return index_;
 }
 
 
