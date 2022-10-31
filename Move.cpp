@@ -10,7 +10,7 @@ Move::Move(const Square& from, const Square& to,
 
 Move::Optional Move::fromUci(const std::string& uci) {
     /* Correct size */
-    if (uci.size() != 4 || uci.size() != 5) {
+    if (uci.size() != 4 && uci.size() != 5) {
         return std::nullopt;
     }
 
