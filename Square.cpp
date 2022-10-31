@@ -115,7 +115,11 @@ const Square Square::G8 = Square(56 + 6);
 const Square Square::H8 = Square(56 + 7);
 
 std::ostream& operator<<(std::ostream& os, const Square& square) {
-    (void)square;
+    Square::Coordinate file = square.file();
+    Square::Coordinate rank = square.rank();
+    char file_char = 'a' + file;
+    char rank_char = '1' + rank;
+    os << file_char << rank_char;
     return os;
 }
 
