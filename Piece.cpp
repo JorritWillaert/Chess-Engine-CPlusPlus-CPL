@@ -35,7 +35,19 @@ bool operator==(const Piece& lhs, const Piece& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Piece& piece) {
-    (void)piece;
+    char symbol;
+    switch(piece.type()) {
+        case PieceType::Pawn: symbol = 'p'; break;
+        case PieceType::Knight: symbol = 'n'; break;
+        case PieceType::Bishop: symbol = 'b'; break;
+        case PieceType::Rook: symbol = 'r'; break;
+        case PieceType::Queen: symbol = 'q'; break;
+        case PieceType::King: symbol = 'k'; break;
+    }
+    if (piece.color() == PieceColor::White) {
+        symbol = toupper(symbol);
+    }
+    os << symbol;
     return os;
 }
 
