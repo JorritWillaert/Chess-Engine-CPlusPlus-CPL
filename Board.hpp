@@ -31,6 +31,22 @@ public:
 
     void pseudoLegalMoves(MoveVec& moves) const;
     void pseudoLegalMovesFrom(const Square& from, MoveVec& moves) const;
+
+private:
+    uint64_t pawn_white_;
+    uint64_t pawn_black_;
+    uint64_t rook_white_;
+    uint64_t rook_black_;
+    uint64_t bishop_white_;
+    uint64_t bishop_black_;
+    uint64_t knight_white_;
+    uint64_t knight_black_;
+    uint64_t queen_white_;
+    uint64_t queen_black_;
+    uint64_t king_white_;
+    uint64_t king_black_;
+
+    PieceColor turn_;
 };
 
 std::ostream& operator<<(std::ostream& os, const Board& board);

@@ -5,8 +5,9 @@
 #include <cmath>
 
 Board::Board()
-{
-}
+    : pawn_white_(0), pawn_black_(0), rook_white_(0), rook_black_(0),
+      bishop_white_(0), bishop_black_(0), knight_white_(0), knight_black_(0),
+      queen_white_(0), queen_black_(0), king_white_(0), king_black_(0) {}
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
     (void)square;
@@ -19,11 +20,11 @@ Piece::Optional Board::piece(const Square& square) const {
 }
 
 void Board::setTurn(PieceColor turn) {
-    (void)turn;
+    turn_ = turn;
 }
 
 PieceColor Board::turn() const {
-    return PieceColor::White;
+    return turn_;
 }
 
 void Board::setCastlingRights(CastlingRights cr) {
