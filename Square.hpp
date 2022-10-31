@@ -39,6 +39,7 @@ std::ostream& operator<<(std::ostream& os, const Square& square);
 
 // Necessary to support Square as the key in std::map.
 bool operator<(const Square& lhs, const Square& rhs);
+bool operator>(const Square& lhs, const Square& rhs);
 bool operator==(const Square& lhs, const Square& rhs);
 bool operator!=(const Square& lhs, const Square& rhs);
 

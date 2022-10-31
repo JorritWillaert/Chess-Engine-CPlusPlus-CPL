@@ -52,5 +52,5 @@ std::ostream& operator<<(std::ostream& os, const Piece& piece) {
 }
 
 PieceColor operator!(PieceColor color) {
-    return color == PieceColor::White ? PieceColor::White : PieceColor::Black;
+    return (color == PieceColor::White) ? PieceColor::Black : PieceColor::White;
 }

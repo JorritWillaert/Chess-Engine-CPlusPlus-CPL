@@ -97,8 +97,25 @@ std::ostream& operator<<(std::ostream& os, const Move& move) {
 
 
 bool operator<(const Move& lhs, const Move& rhs) {
-    (void)lhs;
-    (void)rhs;
+    if (lhs.from() < rhs.from()) {
+        return true;
+    } else if (lhs.from() > rhs.from()) {
+        return false;
+    }
+    /* 'from' equal */
+
+    if (lhs.to() < rhs.to()) {
+        return true;
+    } else if (lhs.to() > rhs.to()) {
+        return false;
+    }
+    /* 'from' and 'to' equal */
+
+    if (lhs.promotion().has_value() && rhs.promotion().has_value()) {
+        return lhs.promotion().value() < rhs.promotion().value();
+    } else if (rhs.promotion().has_value()) {
+        return true;
+    } 
     return false;
 }
 

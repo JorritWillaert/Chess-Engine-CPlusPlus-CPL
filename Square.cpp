@@ -126,6 +126,10 @@ std::ostream& operator<<(std::ostream& os, const Square& square) {
 bool operator<(const Square& lhs, const Square& rhs) {
     return lhs.index() < rhs.index();
 }
+bool operator>(const Square& lhs, const Square& rhs) {
+    return lhs.index() > rhs.index();
+}
+
 
 bool operator==(const Square& lhs, const Square& rhs) {
     return lhs.index() == rhs.index();
