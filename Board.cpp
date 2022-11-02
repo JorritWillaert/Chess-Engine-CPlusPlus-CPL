@@ -13,7 +13,7 @@
 #define set_bit(bitmap, index) (bitmap |= (1ULL << index))
 #define get_bit(bitmap, index) (bitmap & (1ULL << index))
 #define clear_bit(bitmap, index) (bitmap &= ~(1ULL << index))
-#define get_LSB(bitmap) (__builtin_ctzll(bitmap))
+// #define get_LSB(bitmap) (__builtin_ctzll(bitmap))
 
 /* If you read the bit number from left to right, you move from the upper left of the board to the lower right of the board */
 const uint64_t FILE_A = 0x8080808080808080ULL; // 1000 0000 1000 000 ...
@@ -128,9 +128,19 @@ constexpr auto all_king_moves {[]() constexpr {
 
 Board::Board()
 {
-    for (int i = 0; i < 12; i++) {
-        all_bitmaps_[i] = 0;
-    }
+    all_bitmaps_[0] = RANK_2; // White pawns
+    all_bitmaps_[1] = 0x0000000000000042ULL; // White knights
+    all_bitmaps_[2] = 0x0000000000000024ULL; // White bishops
+    all_bitmaps_[3] = 0x0000000000000081ULL; // White rooks
+    all_bitmaps_[4] = 0x0000000000000010ULL; // White queen
+    all_bitmaps_[5] = 0x0000000000000008ULL; // White king
+    all_bitmaps_[6] = RANK_7; // Black pawns
+    all_bitmaps_[7] = 0x4200000000000000ULL; // Black knights
+    all_bitmaps_[8] = 0x2400000000000000ULL; // Black bishops
+    all_bitmaps_[9] = 0x8100000000000000ULL; // Black rooks
+    all_bitmaps_[10] = 0x1000000000000000ULL; // Black queen
+    all_bitmaps_[11] = 0x0800000000000000ULL; // Black king
+
     castling_rights_ = CastlingRights::None;
     castling_rights_ |= CastlingRights::WhiteKingside;
     castling_rights_ |= CastlingRights::WhiteQueenside;
