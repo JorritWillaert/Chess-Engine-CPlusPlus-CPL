@@ -69,6 +69,7 @@ Board::Board()
     castling_rights_ |= CastlingRights::WhiteQueenside;
     castling_rights_ |= CastlingRights::BlackKingside;
     castling_rights_ |= CastlingRights::BlackQueenside;
+    en_passant_square_ = std::nullopt;
 }
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
@@ -104,15 +105,15 @@ void Board::setCastlingRights(CastlingRights cr) {
 }
 
 CastlingRights Board::castlingRights() const {
-    return CastlingRights::None;
+    return castling_rights_;
 }
 
 void Board::setEnPassantSquare(const Square::Optional& square) {
-    (void)square;
+    en_passant_square_ = square;
 }
 
 Square::Optional Board::enPassantSquare() const {
-    return std::nullopt;
+    return en_passant_square_;
 }
 
 void Board::makeMove(const Move& move) {

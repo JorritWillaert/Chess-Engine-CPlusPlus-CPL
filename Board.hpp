@@ -36,6 +36,7 @@ private:
     uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing, BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing
     PieceColor turn_;
     CastlingRights castling_rights_;
+    std::optional<Square> en_passant_square_;
 };
 
 std::ostream& operator<<(std::ostream& os, const Board& board);
