@@ -1,4 +1,5 @@
 #include "Board.hpp"
+#include "CastlingRights.hpp"
 #include "Piece.hpp"
 #include "Square.hpp"
 
@@ -63,6 +64,11 @@ Board::Board()
     for (int i = 0; i < 12; i++) {
         all_bitmaps_[i] = 0;
     }
+    castling_rights_ = CastlingRights::None;
+    castling_rights_ |= CastlingRights::WhiteKingside;
+    castling_rights_ |= CastlingRights::WhiteQueenside;
+    castling_rights_ |= CastlingRights::BlackKingside;
+    castling_rights_ |= CastlingRights::BlackQueenside;
 }
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
@@ -94,7 +100,7 @@ PieceColor Board::turn() const {
 }
 
 void Board::setCastlingRights(CastlingRights cr) {
-    (void)cr;
+    castling_rights_ = cr;
 }
 
 CastlingRights Board::castlingRights() const {
