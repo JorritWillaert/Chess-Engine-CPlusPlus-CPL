@@ -8,6 +8,7 @@
 #include <ostream>
 #include <cassert>
 #include <cmath>
+#include <array>
 
 #define set_bit(bitmap, index) (bitmap |= (1ULL << index))
 #define get_bit(bitmap, index) (bitmap & (1ULL << index))
@@ -23,6 +24,8 @@ const uint64_t FILE_E = 0x0808080808080808ULL; // 0000 1000 0000 100 ...
 const uint64_t FILE_F = 0x0404040404040404ULL; // 0000 0100 0000 010 ...
 const uint64_t FILE_G = 0x0202020202020202ULL; // 0000 0010 0000 001 ...
 const uint64_t FILE_H = 0x0101010101010101ULL; // 0000 0001 0000 000 ...
+const uint64_t FILE_AB = 0xc0c0c0c0c0c0c0c0ULL; // 1100 0000 1100 000 ...
+const uint64_t FILE_GH = 0x0303030303030303ULL; // 0000 0011 0000 001 ...
 
 const uint64_t RANK_1 = 0x00000000000000FFULL; // 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1111 1111
 const uint64_t RANK_2 = 0x000000000000FF00ULL; // 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1111 1111 0000 0000
@@ -32,6 +35,8 @@ const uint64_t RANK_5 = 0x000000FF00000000ULL; // 0000 0000 0000 0000 0000 0000 
 const uint64_t RANK_6 = 0x0000FF0000000000ULL; // 0000 0000 0000 0000 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 const uint64_t RANK_7 = 0x00FF000000000000ULL; // 0000 0000 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 const uint64_t RANK_8 = 0xFF00000000000000ULL; // 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
+const uint64_t RANK_12 = 0x000000000000FFFFULL; // 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1111 1111 1111 1111
+const uint64_t RANK_78 = 0xFFFF000000000000ULL; // 1111 1111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 
 constexpr uint64_t north(uint64_t bitmap) {
     return (bitmap & ~RANK_8) << 8; 
@@ -58,6 +63,20 @@ constexpr uint64_t south_west(uint64_t bitmap) {
 constexpr uint64_t north_west(uint64_t bitmap) {
     return (bitmap & ~RANK_8 & ~FILE_A) << 9;
 }
+
+constexpr uint64_t knight_moves(uint64_t bitmap) {
+    return (((bitmap >> 6 & ~RANK_1) | (bitmap << 10 & ~RANK_8)) & ~FILE_GH) |
+           (((bitmap >> 10 & ~RANK_1) | (bitmap << 6 & ~RANK_8)) & ~FILE_AB) |
+           (((bitmap >> 15 & ~RANK_12) | (bitmap << 17 & ~RANK_78)) & ~FILE_H) |
+           (((bitmap >> 17 & ~RANK_12) | (bitmap << 15 & ~RANK_78)) & ~FILE_A);
+}
+constexpr auto all_knight_moves {[]() constexpr {
+    std::array<uint64_t, 64> moves{};
+    for (int i = 0; i < 64; i++) {
+        moves[i] = knight_moves(1ULL << i);
+    }
+    return moves; 
+}()};
 
 Board::Board()
 {
