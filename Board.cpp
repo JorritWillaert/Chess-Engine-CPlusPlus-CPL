@@ -79,6 +79,20 @@ void Board::setPiece(const Square& square, const Piece::Optional& piece) {
     Piece p = piece.value();
     int piece_index = static_cast<int>(p.type()) + static_cast<int>(p.color()) * 6;
     set_bit(all_bitmaps_[piece_index], square.index());
+    for (int i = 0; i < 12; i++) {
+        if (i != piece_index) {
+            clear_bit(all_bitmaps_[i], square.index()); // Because we might have captured a piece
+        }
+    }
+}
+
+void Board::removePiece(const Square& square, const Piece::Optional& piece) {
+    if (!piece.has_value()) {
+        return;
+    }
+    Piece p = piece.value();
+    int piece_index = static_cast<int>(p.type()) + static_cast<int>(p.color()) * 6;
+    clear_bit(all_bitmaps_[piece_index], square.index());
 }
 
 Piece::Optional Board::piece(const Square& square) const {
@@ -117,7 +131,19 @@ Square::Optional Board::enPassantSquare() const {
 }
 
 void Board::makeMove(const Move& move) {
-    (void)move;
+    Square from = move.from();
+    Square to = move.to();
+    Piece::Optional piece = Board::piece(from);
+    setPiece(to, piece);
+    removePiece(from, piece);
+    
+    std::optional<PieceType> promotion = move.promotion();
+    if (piece.has_value() && promotion.has_value()) {
+        PieceType promotion_type = promotion.value();
+        PieceColor color = piece.value().color();
+        Piece promoted_piece = Piece(color, promotion_type);
+        setPiece(to, promoted_piece);
+    }
 }
 
 void Board::pseudoLegalMoves(MoveVec& moves) const {

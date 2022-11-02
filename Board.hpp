@@ -19,6 +19,7 @@ public:
     Board();
 
     void setPiece(const Square& square, const Piece::Optional& piece);
+    void removePiece(const Square& square, const Piece::Optional& piece);
     Piece::Optional piece(const Square& square) const;
     void setTurn(PieceColor turn);
     PieceColor turn() const;
