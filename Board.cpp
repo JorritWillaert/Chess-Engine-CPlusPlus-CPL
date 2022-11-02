@@ -1,7 +1,9 @@
 #include "Board.hpp"
 #include "Piece.hpp"
+#include "Square.hpp"
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <cassert>
 #include <cmath>
@@ -122,6 +124,17 @@ void Board::pseudoLegalMovesFrom(const Square& from,
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& board) {
-    (void)board;
+    for (int rank = 7; rank >= 0; rank--) {
+        for (int file = 0; file < 8; file++) {
+            std::optional<Square> square = Square::fromCoordinates(file, rank);
+            Piece::Optional piece = board.piece(square.value());
+            if (piece.has_value()) {
+                os << piece.value();
+            } else {
+                os << '.';
+            }
+        }
+        os << std::endl;
+    }
     return os;
 }

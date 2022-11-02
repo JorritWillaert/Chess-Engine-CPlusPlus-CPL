@@ -33,7 +33,7 @@ public:
     void pseudoLegalMovesFrom(const Square& from, MoveVec& moves) const;
 
 private:
-    uint64_t all_bitmaps_[12];
+    uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing, BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing
     PieceColor turn_;
 };
 
