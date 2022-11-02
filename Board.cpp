@@ -115,6 +115,17 @@ constexpr auto all_knight_moves {[]() constexpr {
     return moves; 
 }()};
 
+constexpr uint64_t king_moves(uint64_t bitmap) {
+    return north(bitmap) | east(bitmap) | south(bitmap) | west(bitmap) | north_east(bitmap) | south_east(bitmap) | south_west(bitmap) | north_west(bitmap);
+}
+constexpr auto all_king_moves {[]() constexpr {
+    std::array<uint64_t, 64> moves{};
+    for (int i = 0; i < 64; i++) {
+        moves[i] = king_moves(1ULL << i);
+    }
+    return moves; 
+}()};
+
 Board::Board()
 {
     for (int i = 0; i < 12; i++) {
