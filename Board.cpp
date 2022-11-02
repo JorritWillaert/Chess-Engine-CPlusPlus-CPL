@@ -56,21 +56,6 @@ constexpr uint64_t north_west(uint64_t bitmap) {
     return (bitmap & ~RANK_8 & ~FILE_A) << 9;
 }
 
-enum class BitMapType {
-    PawnWhite,
-    PawnBlack,
-    RookWhite,
-    RookBlack,
-    BishopWhite,
-    BishopBlack,
-    KnightWhite,
-    KnightBlack,
-    QueenWhite,
-    QueenBlack,
-    KingWhite,
-    KingBlack,
-};
-
 Board::Board()
 {
     for (int i = 0; i < 12; i++) {
@@ -79,8 +64,12 @@ Board::Board()
 }
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
-    (void)square;
-    (void)piece;
+    if (!piece.has_value()) {
+        return;
+    }
+    Piece p = piece.value();
+    int piece_index = static_cast<int>(p.type()) + static_cast<int>(p.color()) * 6;
+    set_bit(all_bitmaps_[piece_index], square.index());
 }
 
 Piece::Optional Board::piece(const Square& square) const {
