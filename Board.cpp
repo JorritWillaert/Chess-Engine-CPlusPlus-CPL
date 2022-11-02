@@ -10,6 +10,7 @@
 #define clear_bit(bitmap, index) (bitmap &= ~(1ULL << index))
 #define get_LSB(bitmap) (__builtin_ctzll(bitmap))
 
+/* If you read the bit number from left to right, you move from the upper left of the board to the lower right of the board */
 const uint64_t FILE_A = 0x8080808080808080ULL; // 1000 0000 1000 000 ...
 const uint64_t FILE_B = 0x4040404040404040ULL; // 0100 0000 0100 000 ...
 const uint64_t FILE_C = 0x2020202020202020ULL; // 0010 0000 0010 000 ...
@@ -28,11 +29,30 @@ const uint64_t RANK_6 = 0x0000FF0000000000ULL; // 0000 0000 0000 0000 1111 1111 
 const uint64_t RANK_7 = 0x00FF000000000000ULL; // 0000 0000 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 const uint64_t RANK_8 = 0xFF00000000000000ULL; // 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 
+constexpr uint64_t north(uint64_t bitmap) {
+    return (bitmap & ~RANK_8) << 8; 
+}
+constexpr uint64_t east(uint64_t bitmap) {
+    return (bitmap & ~FILE_H) >> 1;
+}
+constexpr uint64_t south(uint64_t bitmap) {
+    return (bitmap & ~RANK_1) >> 8;
+}
 constexpr uint64_t west(uint64_t bitmap) {
     return (bitmap & ~FILE_A) << 1;
 }
-constexpr uint64_t east(uint64_t bitmap) {
-    return (bitmap & ~FILE_H) << 1;
+
+constexpr uint64_t north_east(uint64_t bitmap) {
+    return (bitmap & ~RANK_8 & ~FILE_H) << 7;
+}
+constexpr uint64_t south_east(uint64_t bitmap) {
+    return (bitmap & ~RANK_1 & ~FILE_H) >> 9;
+}
+constexpr uint64_t south_west(uint64_t bitmap) {
+    return (bitmap & ~RANK_1 & ~FILE_A) >> 7;
+}
+constexpr uint64_t north_west(uint64_t bitmap) {
+    return (bitmap & ~RANK_8 & ~FILE_A) << 9;
 }
 
 enum class BitMapType {
