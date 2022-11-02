@@ -33,7 +33,7 @@ public:
     void pseudoLegalMovesFrom(const Square& from, MoveVec& moves) const;
 
 private:
-    uint64_t[12] all_bitmaps_;
+    uint64_t all_bitmaps_[12];
     PieceColor turn_;
 };
 

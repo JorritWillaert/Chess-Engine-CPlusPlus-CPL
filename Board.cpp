@@ -17,18 +17,13 @@ enum class BitMapType {
     QueenBlack,
     KingWhite,
     KingBlack,
-    Last // Only used for iteration
-}
-
-void initialize_all_bitmaps() {
-    for (int i = BitMapType.PawnWhite; i < BitMapType.Last; i++) {
-        all_bitmaps_[i] = 0;
-    }
-}
+};
 
 Board::Board()
 {
-    initialize_all_bitmaps();
+    for (int i = 0; i < 12; i++) {
+        all_bitmaps_[i] = 0;
+    }
 }
 
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
@@ -37,7 +32,8 @@ void Board::setPiece(const Square& square, const Piece::Optional& piece) {
 }
 
 Piece::Optional Board::piece(const Square& square) const {
-    for (int i = BitMapType.PawnWhite; i < BitMapType.Last; i++) {
+    for (int i = 0; i < 12; i++) {
+        (void)square;
         // TODO
     }
     return std::nullopt;
