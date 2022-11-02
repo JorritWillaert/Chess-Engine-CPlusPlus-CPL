@@ -1,4 +1,5 @@
 #include "Board.hpp"
+#include "Piece.hpp"
 
 #include <cstdint>
 #include <ostream>
@@ -84,8 +85,11 @@ void Board::setPiece(const Square& square, const Piece::Optional& piece) {
 
 Piece::Optional Board::piece(const Square& square) const {
     for (int i = 0; i < 12; i++) {
-        (void)square;
-        // TODO
+        if (get_bit(all_bitmaps_[i], square.index())) {
+            int piece_color = i / 6; // 0 = white, 1 = black
+            int piece_type = i % 6; // 0 = Pawn, 1 = Knight, 2 = Bishop, 3 = Rook, 4 = Queen, 5 = King
+            return Piece(static_cast<PieceColor>(piece_color), static_cast<PieceType>(piece_type));
+        }
     }
     return std::nullopt;
 }
