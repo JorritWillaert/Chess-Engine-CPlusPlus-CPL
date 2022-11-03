@@ -38,7 +38,7 @@ const uint64_t RANK_8 = 0xFF00000000000000ULL; // 1111 1111 0000 0000 0000 0000 
 const uint64_t RANK_12 = 0x000000000000FFFFULL; // 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1111 1111 1111 1111
 const uint64_t RANK_78 = 0xFFFF000000000000ULL; // 1111 1111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 
-const uint64_t ROOKS_MAGICS[64] = {
+constexpr uint64_t ROOKS_MAGICS[64] = {
     0xa8002c000108020ULL, 0x6c00049b0002001ULL, 0x100200010090040ULL, 0x2480041000800801ULL, 0x280028004000800ULL,
     0x900410008040022ULL, 0x280020001001080ULL, 0x2880002041000080ULL, 0xa000800080400034ULL, 0x4808020004000ULL,
     0x2290802004801000ULL, 0x411000d00100020ULL, 0x402800800040080ULL, 0xb000401004208ULL, 0x2409000100040200ULL,
@@ -54,7 +54,7 @@ const uint64_t ROOKS_MAGICS[64] = {
     0x489a000810200402ULL, 0x1004400080a13ULL, 0x4000011008020084ULL, 0x26002114058042ULL
 };
 
-const uint64_t BISHOPS_MAGICS[64] = {
+constexpr uint64_t BISHOPS_MAGICS[64] = {
     0x89a1121896040240ULL, 0x2004844802002010ULL, 0x2068080051921000ULL, 0x62880a0220200808ULL, 0x4042004000000ULL,
     0x100822020200011ULL, 0xc00444222012000aULL, 0x28808801216001ULL, 0x400492088408100ULL, 0x201c401040c0084ULL,
     0x840800910a0010ULL, 0x82080240060ULL, 0x2000840504006000ULL, 0x30010c4108405004ULL, 0x1008005410080802ULL,
@@ -70,7 +70,7 @@ const uint64_t BISHOPS_MAGICS[64] = {
     0x1000042304105ULL, 0x10008830412a00ULL, 0x2520081090008908ULL, 0x40102000a0a60140ULL,
 };
 
-const int ROOKS_INDEX_BITS[64] = {
+constexpr int ROOKS_INDEX_BITS[64] = {
     12, 11, 11, 11, 11, 11, 11, 12,
     11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11,
@@ -81,7 +81,7 @@ const int ROOKS_INDEX_BITS[64] = {
     12, 11, 11, 11, 11, 11, 11, 12
 };
 
-const int BISHOPS_INDEX_BITS[64] = {
+constexpr int BISHOPS_INDEX_BITS[64] = {
     6, 5, 5, 5, 5, 5, 5, 6,
     5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 7, 7, 7, 7, 5, 5,
@@ -116,6 +116,19 @@ constexpr uint64_t south_west(uint64_t bitmap) {
 }
 constexpr uint64_t north_west(uint64_t bitmap) {
     return (bitmap & ~RANK_8 & ~FILE_A) << 9;
+}
+
+constexpr uint64_t getBlockersFromIndex(int i, uint64_t mask) {
+    uint64_t blockers = 0;
+    int bits = __builtin_popcountll(mask);
+    for (int j = 0; j < bits; j++) {
+        int bitPos = __builtin_ffsll(mask) - 1;
+        mask &= mask - 1;
+        if (i & (1 << j)) {
+            blockers |= (1ULL << bitPos);
+        }
+    }
+    return blockers;
 }
 
 /* TODO: keep in mind, here are you returning all possible moves, including the ones where you HAVE to attack someone. Take care of this */
@@ -180,13 +193,37 @@ constexpr auto all_king_moves {[]() constexpr {
     return moves; 
 }()};
 
-constexpr uint64_t mask_occupancy_bishop(uint64_t bitmap, int index) {
-    int rank = index / 8;
-    int file = index % 8;
-    clear_bit(bitmap, index); // You can't move to the same place
-    uint64_t mask = bitmap & (RANK_1 << rank * 8) & (FILE_A << file);
-    return mask;
+constexpr std::array<uint64_t, 64> rook_masks {[]() constexpr {
+    std::array<uint64_t, 64> masks{};
+    for (int i = 0; i < 64; i++) {
+        masks[i] = (RANK_1 << (i / 8) & ~FILE_A & ~FILE_H) | (FILE_A << (i % 8) & ~RANK_1 & ~RANK_8);
+    }
+    return masks;
+}()};
+constexpr uint64_t rook_moves(int i, uint64_t blockers) {
+    uint64_t moves = 0;
+    (void)blockers;
+    (void)i;
+    return moves;
 }
+constexpr auto all_rook_moves {[]() constexpr {
+    std::array<std::array<uint64_t, 4096>, 64> moves = {};
+    for (int i = 0; i < 64; i++) {
+        for (int blocker_i = 0; blocker_i < (1 << ROOKS_INDEX_BITS[i]); blocker_i++) {
+            uint64_t blockers = getBlockersFromIndex(blocker_i, rook_masks[i]);
+            moves[i][(blockers * ROOKS_MAGICS[i]) >> (64 - ROOKS_INDEX_BITS[i])] = rook_moves(i, blockers);
+        }
+    }
+    return moves;
+}()};
+
+// constexpr uint64_t mask_occupancy_bishop(uint64_t bitmap, int index) {
+//     int rank = index / 8;
+//     int file = index % 8;
+//     clear_bit(bitmap, index); // You can't move to the same place
+//     uint64_t mask = bitmap & (RANK_1 << rank * 8) & (FILE_A << file);
+//     return mask;
+// }
 
 Board::Board()
 {
