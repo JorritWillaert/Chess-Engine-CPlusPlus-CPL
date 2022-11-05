@@ -60,6 +60,13 @@ const uint64_t RANK_78 =
     0xFFFF000000000000ULL; // 1111 1111 1111 1111 0000 0000 0000 0000 0000 0000
                            // 0000 0000 0000 0000 0000 0000
 
+const uint64_t DIAGONAL_NE = 0x0102040810204080ULL;
+const uint64_t DIAGONAL_NW = 0x8040201008040201ULL;
+const uint64_t UPPER_LEFT_TRIANGLE = 0xfefcf8f0e0c08000ULL;
+const uint64_t UPPER_RIGHT_TRIANGLE = 0x7f3f1f0f07030100ULL;
+const uint64_t LOWER_LEFT_TRIANGLE = 0x0080c0e0f0f8fcfeULL;
+const uint64_t LOWER_RIGHT_TRIANGLE = 0x000103070f1f3f7fULL;
+
 constexpr uint64_t ROOKS_MAGICS[64] = {
     0xa8002c000108020ULL,  0x6c00049b0002001ULL,  0x100200010090040ULL,
     0x2480041000800801ULL, 0x280028004000800ULL,  0x900410008040022ULL,
@@ -245,13 +252,17 @@ constexpr auto all_rook_moves{[]() constexpr {
   return moves;
 }()};
 
-// constexpr uint64_t mask_occupancy_bishop(uint64_t bitmap, int index) {
-//     int rank = index / 8;
-//     int file = index % 8;
-//     clear_bit(bitmap, index); // You can't move to the same place
-//     uint64_t mask = bitmap & (RANK_1 << rank * 8) & (FILE_A << file);
-//     return mask;
-// }
+constexpr std::array<uint64_t, 64> bishop_masks{[]() constexpr {
+  std::array<uint64_t, 64> masks{};
+  for (int i = 0; i < 64; i++) {
+    masks[i] = (((DIAGONAL_NE << (i % 9) & ~UPPER_LEFT_TRIANGLE) |
+                 (DIAGONAL_NE << (i % 9) & ~LOWER_RIGHT_TRIANGLE)) |
+                ((DIAGONAL_NW >> (i % 7) & ~UPPER_RIGHT_TRIANGLE)) |
+                (DIAGONAL_NW >> (i % 7) & ~LOWER_LEFT_TRIANGLE)) &
+               ~(RANK_1 | RANK_8 | FILE_A | FILE_H);
+  }
+  return masks;
+}()};
 
 Board::Board() {
   all_bitmaps_[0] = RANK_2;                 // White pawns
