@@ -15,6 +15,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-fconstexpr-ops-limit=335544320")
 
 if (MSVC)
     # warning level 4 and all warnings as errors
