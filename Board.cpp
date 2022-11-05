@@ -263,6 +263,24 @@ constexpr std::array<uint64_t, 64> bishop_masks{[]() constexpr {
   }
   return masks;
 }()};
+constexpr uint64_t bishop_moves(int i, uint64_t blockers) {
+  uint64_t moves = 0;
+  (void)blockers;
+  (void)i;
+  return moves;
+}
+constexpr auto all_bishop_moves{[]() constexpr {
+  std::array<std::array<uint64_t, 512>, 64> moves = {};
+  for (int i = 0; i < 64; i++) {
+    for (int blocker_i = 0; blocker_i < (1 << BISHOPS_INDEX_BITS[i]);
+         blocker_i++) {
+      uint64_t blockers = getBlockersFromIndex(blocker_i, bishop_masks[i]);
+      moves[i][(blockers * BISHOPS_MAGICS[i]) >> (64 - BISHOPS_INDEX_BITS[i])] =
+          bishop_moves(i, blockers);
+    }
+  }
+  return moves;
+}()};
 
 Board::Board() {
   all_bitmaps_[0] = RANK_2;                 // White pawns
