@@ -225,6 +225,13 @@ constexpr auto all_king_moves{[]() constexpr {
   return moves;
 }()};
 
+constexpr int bitscan_forward(uint64_t bitmap) {
+  return __builtin_ffsll(bitmap) - 1;
+}
+constexpr int bitscan_backward(uint64_t bitmap) {
+  return 63 - __builtin_clzll(bitmap);
+}
+
 constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
   std::array<uint64_t, 64> masks{};
   for (int i = 0; i < 64; i++) {
@@ -233,10 +240,10 @@ constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
   }
   return masks;
 }()};
-constexpr uint64_t rook_moves(int i, uint64_t blockers) {
+constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   uint64_t moves = 0;
   (void)blockers;
-  (void)i;
+  (void)square;
   return moves;
 }
 constexpr auto all_rook_moves{[]() constexpr {
@@ -263,10 +270,10 @@ constexpr std::array<uint64_t, 64> bishop_masks{[]() constexpr {
   }
   return masks;
 }()};
-constexpr uint64_t bishop_moves(int i, uint64_t blockers) {
+constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   uint64_t moves = 0;
   (void)blockers;
-  (void)i;
+  (void)square;
   return moves;
 }
 constexpr auto all_bishop_moves{[]() constexpr {
