@@ -148,28 +148,28 @@ constexpr uint64_t north_west(uint64_t bitmap) {
 constexpr uint64_t all_north_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = north(locations);
+    locations = north(pos);
   }
   return locations;
 }
 constexpr uint64_t all_east_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = east(locations);
+    locations = east(pos);
   }
   return locations;
 }
 constexpr uint64_t all_west_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = west(locations);
+    locations = west(pos);
   }
   return locations;
 }
 constexpr uint64_t all_south_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = south(locations);
+    locations = south(pos);
   }
   return locations;
 }
@@ -177,28 +177,28 @@ constexpr uint64_t all_south_loc_from_pos(int pos) {
 constexpr uint64_t all_north_east_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = north_east(locations);
+    locations = north_east(pos);
   }
   return locations;
 }
 constexpr uint64_t all_south_east_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = south_east(locations);
+    locations = south_east(pos);
   }
   return locations;
 }
 constexpr uint64_t all_south_west_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = south_west(locations);
+    locations = south_west(pos);
   }
   return locations;
 }
 constexpr uint64_t all_north_west_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = north_west(locations);
+    locations = north_west(pos);
   }
   return locations;
 }
@@ -330,8 +330,35 @@ constexpr std::array<uint64_t, 64> bishop_masks{[]() constexpr {
 }()};
 constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   uint64_t moves = 0;
-  (void)blockers;
-  (void)square;
+
+  uint64_t locs = all_north_east_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_north_east_loc_from_pos(
+        bitscan_forward(all_north_east_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_south_east_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_south_east_loc_from_pos(
+        bitscan_backward(all_south_east_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_south_west_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_south_west_loc_from_pos(
+        bitscan_backward(all_south_west_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_north_west_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_north_west_loc_from_pos(
+        bitscan_forward(all_north_west_loc_from_pos(square) & blockers)));
+  }
+
   return moves;
 }
 constexpr auto all_bishop_moves{[]() constexpr {
