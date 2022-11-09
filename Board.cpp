@@ -290,6 +290,9 @@ constexpr auto all_king_moves{[]() constexpr {
 }()};
 
 constexpr int bitscan_forward(uint64_t bitmap) {
+  if (bitmap == 0) {
+    return -1;
+  }
   return __builtin_ffsll(bitmap) - 1;
 }
 constexpr int bitscan_backward(uint64_t bitmap) {
@@ -550,6 +553,8 @@ void Board::add_pseudo_bishop_moves(const Square &from,
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   uint64_t blockers = friendly | opponent;
+  blockers &=
+      ~(1ULL << from.index()); // The piece itself may not be seen as blocker
 
   blockers &= bishop_masks[from.index()];
   std::cout << "blockers: " << blockers << std::endl;
