@@ -642,6 +642,19 @@ void Board::add_pseudo_queen_moves(const Square &from,
   add_pseudo_rook_moves(from, moves);
 }
 
+bool Board::square_under_attack_by_color(const Square &from,
+                                         const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return false;
+    // return square_under_attack_by_white(from);
+    // TODO!
+  } else {
+    return false;
+    // TODO!
+    // return square_under_attack_by_black(from);
+  }
+}
+
 uint64_t Board::get_castle_moves(const Square &from) const {
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();

@@ -45,6 +45,9 @@ public:
 
   uint64_t get_castle_moves(const Square &from) const;
 
+  bool square_under_attack_by_color(const Square &square,
+                                    const PieceColor color) const;
+
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
                              // WhiteQueen, WhiteKing, BlackPawn, BlackKnight,
