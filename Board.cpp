@@ -536,9 +536,40 @@ uint64_t Board::get_all_opponent_pieces() const {
 
 void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                                   const PieceColor color) const {
-  (void)from;
-  (void)moves;
-  (void)color;
+  const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t all = friendly | opponent;
+  uint64_t all_moves;
+
+  if (color == PieceColor::White) {
+    uint64_t single_push = north(all_bitmaps_[0]) & ~all;
+    uint64_t double_push = north(single_push & RANK_3) & ~all;
+    uint64_t left_capture = north_west(all_bitmaps_[0]) & opponent;
+    uint64_t right_capture = north_east(all_bitmaps_[0]) & opponent;
+    all_moves = single_push | double_push | left_capture | right_capture;
+  } else {
+    uint64_t single_push = south(all_bitmaps_[6]) & ~all;
+    uint64_t double_push = south(single_push & RANK_5) & ~all;
+    uint64_t left_capture = south_west(all_bitmaps_[6]) & opponent;
+    uint64_t right_capture = north_east(all_bitmaps_[6]) & opponent;
+    all_moves = single_push | double_push | left_capture | right_capture;
+  }
+  while (all_moves) {
+    Square to = Square::fromIndex(pop_lsb(all_moves)).value();
+    if (to.rank() == 7 && color == PieceColor::White) {
+      moves.push_back(Move(from, to, PieceType::Queen));
+      moves.push_back(Move(from, to, PieceType::Rook));
+      moves.push_back(Move(from, to, PieceType::Bishop));
+      moves.push_back(Move(from, to, PieceType::Knight));
+    } else if (to.rank() == 0 && color == PieceColor::Black) {
+      moves.push_back(Move(from, to, PieceType::Queen));
+      moves.push_back(Move(from, to, PieceType::Rook));
+      moves.push_back(Move(from, to, PieceType::Bishop));
+      moves.push_back(Move(from, to, PieceType::Knight));
+    } else {
+      moves.push_back(Move(from, to));
+    }
+  }
 }
 
 void Board::add_pseudo_knight_moves(const Square &from,
