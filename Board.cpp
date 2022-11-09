@@ -152,7 +152,6 @@ constexpr uint64_t all_north_loc_from_pos(int pos) {
   }
   return locations;
 }
-
 constexpr uint64_t all_east_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
@@ -160,7 +159,6 @@ constexpr uint64_t all_east_loc_from_pos(int pos) {
   }
   return locations;
 }
-
 constexpr uint64_t all_west_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
@@ -168,13 +166,39 @@ constexpr uint64_t all_west_loc_from_pos(int pos) {
   }
   return locations;
 }
-
 constexpr uint64_t all_south_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    if (pos >= 64)
-      break;
     locations = south(locations);
+  }
+  return locations;
+}
+
+constexpr uint64_t all_north_east_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = north_east(locations);
+  }
+  return locations;
+}
+constexpr uint64_t all_south_east_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = south_east(locations);
+  }
+  return locations;
+}
+constexpr uint64_t all_south_west_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = south_west(locations);
+  }
+  return locations;
+}
+constexpr uint64_t all_north_west_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = north_west(locations);
   }
   return locations;
 }
