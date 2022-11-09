@@ -262,10 +262,10 @@ constexpr auto all_pawn_moves_black{[]() constexpr {
 }()};
 
 constexpr uint64_t knight_moves(uint64_t bitmap) {
-  return (((bitmap >> 6 & ~RANK_1) | (bitmap << 10 & ~RANK_8)) & ~FILE_GH) |
-         (((bitmap >> 10 & ~RANK_1) | (bitmap << 6 & ~RANK_8)) & ~FILE_AB) |
-         (((bitmap >> 15 & ~RANK_12) | (bitmap << 17 & ~RANK_78)) & ~FILE_H) |
-         (((bitmap >> 17 & ~RANK_12) | (bitmap << 15 & ~RANK_78)) & ~FILE_A);
+  return (((bitmap >> 6) | (bitmap << 10)) & ~FILE_GH) |
+         (((bitmap >> 10) | (bitmap << 6)) & ~FILE_AB) |
+         (((bitmap >> 15) | (bitmap << 17)) & ~FILE_H) |
+         (((bitmap >> 17) | (bitmap << 15)) & ~FILE_A);
 }
 constexpr auto all_knight_moves{[]() constexpr {
   std::array<uint64_t, 64> moves{};
@@ -543,8 +543,14 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
 
 void Board::add_pseudo_knight_moves(const Square &from,
                                     Board::MoveVec &moves) const {
-  (void)from;
-  (void)moves;
+  const uint64_t friendly = get_all_friendly_pieces();
+  uint64_t all_moves = all_knight_moves[from.index()];
+  std::cout << "all_moves: " << all_moves << std::endl;
+  all_moves &= ~friendly;
+  while (all_moves) {
+    Square to = Square::fromIndex(pop_lsb(all_moves)).value();
+    moves.push_back(Move(from, to));
+  }
 }
 
 void Board::add_pseudo_bishop_moves(const Square &from,
