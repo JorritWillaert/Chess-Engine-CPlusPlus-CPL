@@ -561,9 +561,9 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
     uint64_t left_capture = south_west(all_bitmaps_[6]) & opponent;
     uint64_t right_capture = north_east(all_bitmaps_[6]) & opponent;
     if (enPassantSquare().has_value()) {
-      en_passant_moves |= north_west(all_bitmaps_[0]) &
+      en_passant_moves |= south_west(all_bitmaps_[6]) &
                           (1ULL << enPassantSquare().value().index());
-      en_passant_moves |= north_east(all_bitmaps_[0]) &
+      en_passant_moves |= south_east(all_bitmaps_[6]) &
                           (1ULL << enPassantSquare().value().index());
     }
     all_moves = single_push | double_push | left_capture | right_capture |
