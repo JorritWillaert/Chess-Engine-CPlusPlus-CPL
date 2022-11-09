@@ -33,15 +33,15 @@ public:
   void pseudoLegalMovesFrom(const Square &from, MoveVec &moves) const;
 
   void add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
-                             const PieceColor color);
-  void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves);
-  void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves);
-  void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves);
-  void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves);
-  void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves);
+                             const PieceColor color) const;
+  void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) const;
+  void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) const;
+  void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) const;
+  void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) const;
+  void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) const;
 
-  uint64_t get_all_friendly_pieces();
-  uint64_t get_all_opponent_pieces();
+  uint64_t get_all_friendly_pieces() const;
+  uint64_t get_all_opponent_pieces() const;
 
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
