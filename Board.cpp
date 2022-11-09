@@ -642,11 +642,52 @@ void Board::add_pseudo_queen_moves(const Square &from,
   add_pseudo_rook_moves(from, moves);
 }
 
+uint64_t Board::get_castle_moves(const Square &from) const {
+  const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t all = friendly | opponent;
+  uint64_t castle_moves = 0;
+
+  if (from == Square::E1) {
+    if (castlingRights() == CastlingRights::WhiteKingside) {
+      if (!(all & (1ULL << Square::F1.index())) &&
+          !(all & (1ULL << Square::G1.index()))) {
+        castle_moves |= 1ULL << Square::G1.index();
+      }
+    }
+    if (castlingRights() == CastlingRights::WhiteQueenside) {
+      if (!(all & (1ULL << Square::D1.index())) &&
+          !(all & (1ULL << Square::C1.index())) &&
+          !(all & (1ULL << Square::B1.index()))) {
+        castle_moves |= 1ULL << Square::C1.index();
+      }
+    }
+  } else if (from == Square::E8) {
+    if (castlingRights() == CastlingRights::BlackKingside) {
+      if (!(all & (1ULL << Square::F8.index())) &&
+          !(all & (1ULL << Square::G8.index()))) {
+        castle_moves |= 1ULL << Square::G8.index();
+      }
+    }
+    if (castlingRights() == CastlingRights::BlackQueenside) {
+      if (!(all & (1ULL << Square::D8.index())) &&
+          !(all & (1ULL << Square::C8.index())) &&
+          !(all & (1ULL << Square::B8.index()))) {
+        castle_moves |= 1ULL << Square::C8.index();
+      }
+    }
+  }
+  return castle_moves;
+}
+
 void Board::add_pseudo_king_moves(const Square &from,
                                   Board::MoveVec &moves) const {
   const uint64_t friendly = get_all_friendly_pieces();
   uint64_t all_moves = all_king_moves[from.index()];
   all_moves &= ~friendly;
+
+  all_moves |= get_castle_moves(from);
+
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));

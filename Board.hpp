@@ -43,6 +43,8 @@ public:
   uint64_t get_all_friendly_pieces() const;
   uint64_t get_all_opponent_pieces() const;
 
+  uint64_t get_castle_moves(const Square &from) const;
+
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
                              // WhiteQueen, WhiteKing, BlackPawn, BlackKnight,
