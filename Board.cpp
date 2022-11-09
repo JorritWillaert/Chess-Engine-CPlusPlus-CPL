@@ -145,6 +145,40 @@ constexpr uint64_t north_west(uint64_t bitmap) {
   return (bitmap & ~RANK_8 & ~FILE_A) << 9;
 }
 
+constexpr uint64_t all_north_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = north(locations);
+  }
+  return locations;
+}
+
+constexpr uint64_t all_east_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = east(locations);
+  }
+  return locations;
+}
+
+constexpr uint64_t all_west_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    locations = west(locations);
+  }
+  return locations;
+}
+
+constexpr uint64_t all_south_loc_from_pos(int pos) {
+  uint64_t locations = 0;
+  for (int i = 0; i < 8; i++) {
+    if (pos >= 64)
+      break;
+    locations = south(locations);
+  }
+  return locations;
+}
+
 constexpr uint64_t getBlockersFromIndex(int i, uint64_t mask) {
   uint64_t blockers = 0;
   int bits = __builtin_popcountll(mask);
