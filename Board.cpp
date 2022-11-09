@@ -520,10 +520,17 @@ uint64_t Board::get_all_opponent_pieces() const {
 }
 
 void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
-                                  const PieceColor color) const {}
+                                  const PieceColor color) const {
+  (void)from;
+  (void)moves;
+  (void)color;
+}
 
 void Board::add_pseudo_knight_moves(const Square &from,
-                                    Board::MoveVec &moves) const {}
+                                    Board::MoveVec &moves) const {
+  (void)from;
+  (void)moves;
+}
 
 void Board::add_pseudo_bishop_moves(const Square &from,
                                     Board::MoveVec &moves) const {
@@ -532,10 +539,13 @@ void Board::add_pseudo_bishop_moves(const Square &from,
   uint64_t blockers = friendly | opponent;
 
   blockers &= bishop_masks[from.index()];
+  std::cout << "blockers: " << blockers << std::endl;
   uint64_t key = (blockers * BISHOPS_MAGICS[from.index()]) >>
                  (64 - BISHOPS_INDEX_BITS[from.index()]);
   uint64_t all_moves = all_bishop_moves[from.index()][key];
+  std::cout << "all_moves: " << all_moves << std::endl;
   all_moves &= ~friendly; // You can't attack your own pieces
+  std::cout << "all_moves after friendly remove: " << all_moves << std::endl;
 
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
@@ -544,7 +554,10 @@ void Board::add_pseudo_bishop_moves(const Square &from,
 }
 
 void Board::add_pseudo_rook_moves(const Square &from,
-                                  Board::MoveVec &moves) const {}
+                                  Board::MoveVec &moves) const {
+  (void)from;
+  (void)moves;
+}
 
 void Board::add_pseudo_queen_moves(const Square &from,
                                    Board::MoveVec &moves) const {
@@ -553,7 +566,10 @@ void Board::add_pseudo_queen_moves(const Square &from,
 }
 
 void Board::add_pseudo_king_moves(const Square &from,
-                                  Board::MoveVec &moves) const {}
+                                  Board::MoveVec &moves) const {
+  (void)from;
+  (void)moves;
+}
 
 void Board::pseudoLegalMoves(MoveVec &moves) const {
   for (int i = 0; i < 64; i++) {
