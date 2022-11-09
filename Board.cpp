@@ -493,6 +493,22 @@ void Board::makeMove(const Move &move) {
   }
 }
 
+void add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
+                           const PieceColor color) {}
+
+void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) {}
+
+void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) {}
+
+void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) {}
+
+void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) {
+  add_pseudo_bishop_moves(from, moves);
+  add_pseudo_rook_moves(from, moves);
+}
+
+void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) {}
+
 void Board::pseudoLegalMoves(MoveVec &moves) const { (void)moves; }
 
 void Board::pseudoLegalMovesFrom(const Square &from,
