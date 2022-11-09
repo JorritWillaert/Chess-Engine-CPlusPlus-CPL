@@ -497,8 +497,32 @@ void Board::pseudoLegalMoves(MoveVec &moves) const { (void)moves; }
 
 void Board::pseudoLegalMovesFrom(const Square &from,
                                  Board::MoveVec &moves) const {
-  (void)from;
-  (void)moves;
+  Piece::Optional piece = Board::piece(from);
+  if (!piece.has_value()) {
+    return;
+  }
+
+  Piece p = piece.value();
+  switch (p.type()) {
+  case PieceType::Pawn:
+    add_pseudo_pawn_moves(from, moves, p.color());
+    break;
+  case PieceType::Knight:
+    add_pseudo_knight_moves(from, moves);
+    break;
+  case PieceType::Bishop:
+    add_pseudo_bishop_moves(from, moves);
+    break;
+  case PieceType::Rook:
+    add_pseudo_rook_moves(from, moves);
+    break;
+  case PieceType::Queen:
+    add_pseudo_queen_moves(from, moves);
+    break;
+  case PieceType::King:
+    add_pseudo_king_moves(from, moves);
+    break;
+  }
 }
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {
