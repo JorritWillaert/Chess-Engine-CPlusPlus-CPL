@@ -539,6 +539,7 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   const uint64_t all = friendly | opponent;
+  uint64_t en_passant_moves = 0;
   uint64_t all_moves;
 
   if (color == PieceColor::White) {
@@ -546,13 +547,27 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
     uint64_t double_push = north(single_push & RANK_3) & ~all;
     uint64_t left_capture = north_west(all_bitmaps_[0]) & opponent;
     uint64_t right_capture = north_east(all_bitmaps_[0]) & opponent;
-    all_moves = single_push | double_push | left_capture | right_capture;
+    if (enPassantSquare().has_value()) {
+      en_passant_moves |= north_west(all_bitmaps_[0]) &
+                          (1ULL << enPassantSquare().value().index());
+      en_passant_moves |= north_east(all_bitmaps_[0]) &
+                          (1ULL << enPassantSquare().value().index());
+    }
+    all_moves = single_push | double_push | left_capture | right_capture |
+                en_passant_moves;
   } else {
     uint64_t single_push = south(all_bitmaps_[6]) & ~all;
     uint64_t double_push = south(single_push & RANK_5) & ~all;
     uint64_t left_capture = south_west(all_bitmaps_[6]) & opponent;
     uint64_t right_capture = north_east(all_bitmaps_[6]) & opponent;
-    all_moves = single_push | double_push | left_capture | right_capture;
+    if (enPassantSquare().has_value()) {
+      en_passant_moves |= north_west(all_bitmaps_[0]) &
+                          (1ULL << enPassantSquare().value().index());
+      en_passant_moves |= north_east(all_bitmaps_[0]) &
+                          (1ULL << enPassantSquare().value().index());
+    }
+    all_moves = single_push | double_push | left_capture | right_capture |
+                en_passant_moves;
   }
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
