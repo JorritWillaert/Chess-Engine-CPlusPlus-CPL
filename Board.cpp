@@ -14,7 +14,13 @@
 #define set_bit(bitmap, index) (bitmap |= (1ULL << index))
 #define get_bit(bitmap, index) (bitmap & (1ULL << index))
 #define clear_bit(bitmap, index) (bitmap &= ~(1ULL << index))
-// #define get_LSB(bitmap) (__builtin_ctzll(bitmap))
+#define get_LSB(bitmap) (__builtin_ctzll(bitmap))
+
+constexpr int pop_lsb(uint64_t &bitmap) {
+  int index = get_LSB(bitmap);
+  bitmap &= bitmap - 1;
+  return index;
+}
 
 /* If you read the bit number from left to right, you move from the upper left
  * of the board to the lower right of the board */
@@ -522,6 +528,19 @@ void Board::add_pseudo_knight_moves(const Square &from,
 void Board::add_pseudo_bishop_moves(const Square &from,
                                     Board::MoveVec &moves) const {
   const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t opponent = get_all_opponent_pieces();
+  uint64_t blockers = friendly | opponent;
+
+  blockers &= bishop_masks[from.index()];
+  uint64_t key = (blockers * BISHOPS_MAGICS[from.index()]) >>
+                 (64 - BISHOPS_INDEX_BITS[from.index()]);
+  uint64_t all_moves = all_bishop_moves[from.index()][key];
+  all_moves &= ~friendly; // You can't attack your own pieces
+
+  while (all_moves) {
+    Square to = Square::fromIndex(pop_lsb(all_moves)).value();
+    moves.push_back(Move(from, to));
+  }
 }
 
 void Board::add_pseudo_rook_moves(const Square &from,
