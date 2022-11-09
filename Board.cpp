@@ -152,30 +152,30 @@ constexpr uint64_t north_west(uint64_t bitmap) {
 }
 
 constexpr uint64_t all_north_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = north(1ULL << pos) || locations;
+  uint64_t locations = north(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= north(locations);
   }
   return locations;
 }
 constexpr uint64_t all_east_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = east(1ULL << pos) || locations;
+  uint64_t locations = east(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= east(locations);
   }
   return locations;
 }
 constexpr uint64_t all_west_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = west(1ULL << pos) || locations;
+  uint64_t locations = west(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= west(locations);
   }
   return locations;
 }
 constexpr uint64_t all_south_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = south(1ULL << pos) || locations;
+  uint64_t locations = south(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= south(locations);
   }
   return locations;
 }
@@ -301,8 +301,9 @@ constexpr int bitscan_backward(uint64_t bitmap) {
 constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
   std::array<uint64_t, 64> masks{};
   for (int i = 0; i < 64; i++) {
-    masks[i] = ((RANK_1 << ((i / 8) * 8)) & ~FILE_A & ~FILE_H) |
-               ((FILE_A << (i % 8)) & ~RANK_1 & ~RANK_8);
+    masks[i] = (all_north_loc_from_pos(i) | all_south_loc_from_pos(i) |
+                all_east_loc_from_pos(i) | all_west_loc_from_pos(i)) &
+               ~(RANK_1 | RANK_8 | FILE_A | FILE_H);
   }
   return masks;
 }()};
@@ -551,19 +552,13 @@ void Board::add_pseudo_bishop_moves(const Square &from,
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   uint64_t blockers = friendly | opponent;
-  std::cout << "blockers start : " << blockers << std::endl;
   clear_bit(blockers, from.index());
-  std::cout << "blockers now:" << blockers << std::endl;
 
   blockers &= bishop_masks[from.index()];
-  std::cout << "Mask: " << bishop_masks[from.index()] << std::endl;
-  std::cout << "blockers: " << blockers << std::endl;
   uint64_t key = (blockers * BISHOPS_MAGICS[from.index()]) >>
                  (64 - BISHOPS_INDEX_BITS[from.index()]);
   uint64_t all_moves = all_bishop_moves[from.index()][key];
-  std::cout << "all_moves: " << all_moves << std::endl;
   all_moves &= ~friendly; // You can't attack your own pieces
-  std::cout << "all_moves after friendly remove: " << all_moves << std::endl;
 
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
@@ -573,8 +568,21 @@ void Board::add_pseudo_bishop_moves(const Square &from,
 
 void Board::add_pseudo_rook_moves(const Square &from,
                                   Board::MoveVec &moves) const {
-  (void)from;
-  (void)moves;
+  const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t opponent = get_all_opponent_pieces();
+  uint64_t blockers = friendly | opponent;
+  clear_bit(blockers, from.index());
+
+  blockers &= rook_masks[from.index()];
+  uint64_t key = (blockers * ROOKS_MAGICS[from.index()]) >>
+                 (64 - ROOKS_INDEX_BITS[from.index()]);
+  uint64_t all_moves = all_rook_moves[from.index()][key];
+  all_moves &= ~friendly; // You can't attack your own pieces
+
+  while (all_moves) {
+    Square to = Square::fromIndex(pop_lsb(all_moves)).value();
+    moves.push_back(Move(from, to));
+  }
 }
 
 void Board::add_pseudo_queen_moves(const Square &from,
