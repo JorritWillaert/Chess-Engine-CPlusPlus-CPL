@@ -300,8 +300,35 @@ constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
 }()};
 constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   uint64_t moves = 0;
-  (void)blockers;
-  (void)square;
+
+  uint64_t locs = all_north_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_north_loc_from_pos(
+        bitscan_forward(all_north_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_east_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_east_loc_from_pos(
+        bitscan_forward(all_east_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_south_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_south_loc_from_pos(
+        bitscan_backward(all_south_loc_from_pos(square) & blockers)));
+  }
+
+  locs = all_west_loc_from_pos(square);
+  moves |= locs;
+  if (locs & blockers) {
+    moves &= ~(all_west_loc_from_pos(
+        bitscan_backward(all_west_loc_from_pos(square) & blockers)));
+  }
+
   return moves;
 }
 constexpr auto all_rook_moves{[]() constexpr {
