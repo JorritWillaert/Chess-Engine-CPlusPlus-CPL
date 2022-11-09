@@ -168,9 +168,6 @@ Board::Optional Fen::createBoard(std::istream &fenStream) {
     return std::nullopt;
   }
 
-  std::cout << "This is the generated board" << std::endl;
-  std::cout << board << std::endl;
-
   return board;
 }
 

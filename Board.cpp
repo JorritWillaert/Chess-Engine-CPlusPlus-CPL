@@ -545,7 +545,6 @@ void Board::add_pseudo_knight_moves(const Square &from,
                                     Board::MoveVec &moves) const {
   const uint64_t friendly = get_all_friendly_pieces();
   uint64_t all_moves = all_knight_moves[from.index()];
-  std::cout << "all_moves: " << all_moves << std::endl;
   all_moves &= ~friendly;
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
