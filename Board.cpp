@@ -543,27 +543,27 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
   uint64_t all_moves;
 
   if (color == PieceColor::White) {
-    uint64_t single_push = north(all_bitmaps_[0]) & ~all;
+    uint64_t single_push = north(1ULL << from.index()) & ~all;
     uint64_t double_push = north(single_push & RANK_3) & ~all;
-    uint64_t left_capture = north_west(all_bitmaps_[0]) & opponent;
-    uint64_t right_capture = north_east(all_bitmaps_[0]) & opponent;
+    uint64_t left_capture = north_west(1ULL << from.index()) & opponent;
+    uint64_t right_capture = north_east(1ULL << from.index()) & opponent;
     if (enPassantSquare().has_value()) {
-      en_passant_moves |= north_west(all_bitmaps_[0]) &
+      en_passant_moves |= north_west(1ULL << from.index()) &
                           (1ULL << enPassantSquare().value().index());
-      en_passant_moves |= north_east(all_bitmaps_[0]) &
+      en_passant_moves |= north_east(1ULL << from.index()) &
                           (1ULL << enPassantSquare().value().index());
     }
     all_moves = single_push | double_push | left_capture | right_capture |
                 en_passant_moves;
   } else {
-    uint64_t single_push = south(all_bitmaps_[6]) & ~all;
+    uint64_t single_push = south(1ULL << from.index()) & ~all;
     uint64_t double_push = south(single_push & RANK_5) & ~all;
-    uint64_t left_capture = south_west(all_bitmaps_[6]) & opponent;
-    uint64_t right_capture = north_east(all_bitmaps_[6]) & opponent;
+    uint64_t left_capture = south_west(1ULL << from.index()) & opponent;
+    uint64_t right_capture = north_east(1ULL << from.index()) & opponent;
     if (enPassantSquare().has_value()) {
-      en_passant_moves |= south_west(all_bitmaps_[6]) &
+      en_passant_moves |= south_west(1ULL << from.index()) &
                           (1ULL << enPassantSquare().value().index());
-      en_passant_moves |= south_east(all_bitmaps_[6]) &
+      en_passant_moves |= south_east(1ULL << from.index()) &
                           (1ULL << enPassantSquare().value().index());
     }
     all_moves = single_push | double_push | left_capture | right_capture |
