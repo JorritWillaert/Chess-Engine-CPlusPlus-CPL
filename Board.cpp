@@ -493,21 +493,28 @@ void Board::makeMove(const Move &move) {
   }
 }
 
-void add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
-                           const PieceColor color) {}
+uint64_t Board::get_all_friendly_pieces() {}
 
-void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) {}
+uint64_t Board::get_all_opponent_pieces() {}
 
-void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) {}
+void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
+                                  const PieceColor color) {}
 
-void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) {}
+void Board::add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) {
+}
 
-void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) {
+void Board::add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) {
+  const uint64_t friendly = get_all_friendly_pieces();
+}
+
+void Board::add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) {}
+
+void Board::add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) {
   add_pseudo_bishop_moves(from, moves);
   add_pseudo_rook_moves(from, moves);
 }
 
-void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) {}
+void Board::add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) {}
 
 void Board::pseudoLegalMoves(MoveVec &moves) const {
   for (int i = 0; i < 64; i++) {
