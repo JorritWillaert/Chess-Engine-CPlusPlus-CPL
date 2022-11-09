@@ -509,12 +509,16 @@ void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) {
 
 void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) {}
 
-void Board::pseudoLegalMoves(MoveVec &moves) const { (void)moves; }
+void Board::pseudoLegalMoves(MoveVec &moves) const {
+  for (int i = 0; i < 64; i++) {
+    pseudoLegalMovesFrom(Square::fromIndex(i).value(), moves);
+  }
+}
 
 void Board::pseudoLegalMovesFrom(const Square &from,
                                  Board::MoveVec &moves) const {
   Piece::Optional piece = Board::piece(from);
-  if (!piece.has_value()) {
+  if (!piece.has_value() || piece.value().color() != turn_) {
     return;
   }
 
