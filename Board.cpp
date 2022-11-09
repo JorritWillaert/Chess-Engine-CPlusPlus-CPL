@@ -598,8 +598,13 @@ void Board::add_pseudo_queen_moves(const Square &from,
 
 void Board::add_pseudo_king_moves(const Square &from,
                                   Board::MoveVec &moves) const {
-  (void)from;
-  (void)moves;
+  const uint64_t friendly = get_all_friendly_pieces();
+  uint64_t all_moves = all_king_moves[from.index()];
+  all_moves &= ~friendly;
+  while (all_moves) {
+    Square to = Square::fromIndex(pop_lsb(all_moves)).value();
+    moves.push_back(Move(from, to));
+  }
 }
 
 void Board::pseudoLegalMoves(MoveVec &moves) const {
