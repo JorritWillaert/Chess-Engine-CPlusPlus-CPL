@@ -493,9 +493,25 @@ void Board::makeMove(const Move &move) {
   }
 }
 
-uint64_t Board::get_all_friendly_pieces() const {}
+uint64_t Board::get_all_friendly_pieces() const {
+  if (turn_ == PieceColor::White) {
+    return all_bitmaps_[0] | all_bitmaps_[1] | all_bitmaps_[2] |
+           all_bitmaps_[3] | all_bitmaps_[4] | all_bitmaps_[5];
+  } else {
+    return all_bitmaps_[6] | all_bitmaps_[7] | all_bitmaps_[8] |
+           all_bitmaps_[9] | all_bitmaps_[10] | all_bitmaps_[11];
+  }
+}
 
-uint64_t Board::get_all_opponent_pieces() const {}
+uint64_t Board::get_all_opponent_pieces() const {
+  if (turn_ == PieceColor::White) {
+    return all_bitmaps_[6] | all_bitmaps_[7] | all_bitmaps_[8] |
+           all_bitmaps_[9] | all_bitmaps_[10] | all_bitmaps_[11];
+  } else {
+    return all_bitmaps_[0] | all_bitmaps_[1] | all_bitmaps_[2] |
+           all_bitmaps_[3] | all_bitmaps_[4] | all_bitmaps_[5];
+  }
+}
 
 void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                                   const PieceColor color) const {}
