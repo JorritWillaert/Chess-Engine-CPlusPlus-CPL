@@ -154,57 +154,57 @@ constexpr uint64_t north_west(uint64_t bitmap) {
 constexpr uint64_t all_north_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = north(pos);
+    locations = north(1ULL << pos) || locations;
   }
   return locations;
 }
 constexpr uint64_t all_east_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = east(pos);
+    locations = east(1ULL << pos) || locations;
   }
   return locations;
 }
 constexpr uint64_t all_west_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = west(pos);
+    locations = west(1ULL << pos) || locations;
   }
   return locations;
 }
 constexpr uint64_t all_south_loc_from_pos(int pos) {
   uint64_t locations = 0;
   for (int i = 0; i < 8; i++) {
-    locations = south(pos);
+    locations = south(1ULL << pos) || locations;
   }
   return locations;
 }
 
 constexpr uint64_t all_north_east_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = north_east(pos);
+  uint64_t locations = north_east(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= north_east(locations);
   }
   return locations;
 }
 constexpr uint64_t all_south_east_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = south_east(pos);
+  uint64_t locations = south_east(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= south_east(locations);
   }
   return locations;
 }
 constexpr uint64_t all_south_west_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = south_west(pos);
+  uint64_t locations = south_west(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= south_west(locations);
   }
   return locations;
 }
 constexpr uint64_t all_north_west_loc_from_pos(int pos) {
-  uint64_t locations = 0;
-  for (int i = 0; i < 8; i++) {
-    locations = north_west(pos);
+  uint64_t locations = north_west(1ULL << pos);
+  for (int i = 0; i < 6; i++) {
+    locations |= north_west(locations);
   }
   return locations;
 }
@@ -408,18 +408,31 @@ constexpr auto all_bishop_moves{[]() constexpr {
 }()};
 
 Board::Board() {
-  all_bitmaps_[0] = RANK_2;                 // White pawns
-  all_bitmaps_[1] = 0x0000000000000042ULL;  // White knights
-  all_bitmaps_[2] = 0x0000000000000024ULL;  // White bishops
-  all_bitmaps_[3] = 0x0000000000000081ULL;  // White rooks
-  all_bitmaps_[4] = 0x0000000000000010ULL;  // White queen
-  all_bitmaps_[5] = 0x0000000000000008ULL;  // White king
-  all_bitmaps_[6] = RANK_7;                 // Black pawns
-  all_bitmaps_[7] = 0x4200000000000000ULL;  // Black knights
-  all_bitmaps_[8] = 0x2400000000000000ULL;  // Black bishops
-  all_bitmaps_[9] = 0x8100000000000000ULL;  // Black rooks
-  all_bitmaps_[10] = 0x1000000000000000ULL; // Black queen
-  all_bitmaps_[11] = 0x0800000000000000ULL; // Black king
+  // all_bitmaps_[0] = RANK_2;                 // White pawns
+  // all_bitmaps_[1] = 0x0000000000000042ULL;  // White knights
+  // all_bitmaps_[2] = 0x0000000000000024ULL;  // White bishops
+  // all_bitmaps_[3] = 0x0000000000000081ULL;  // White rooks
+  // all_bitmaps_[4] = 0x0000000000000010ULL;  // White queen
+  // all_bitmaps_[5] = 0x0000000000000008ULL;  // White king
+  // all_bitmaps_[6] = RANK_7;                 // Black pawns
+  // all_bitmaps_[7] = 0x4200000000000000ULL;  // Black knights
+  // all_bitmaps_[8] = 0x2400000000000000ULL;  // Black bishops
+  // all_bitmaps_[9] = 0x8100000000000000ULL;  // Black rooks
+  // all_bitmaps_[10] = 0x1000000000000000ULL; // Black queen
+  // all_bitmaps_[11] = 0x0800000000000000ULL; // Black king
+
+  all_bitmaps_[0] = 0;  // White pawns
+  all_bitmaps_[1] = 0;  // White knights
+  all_bitmaps_[2] = 0;  // White bishops
+  all_bitmaps_[3] = 0;  // White rooks
+  all_bitmaps_[4] = 0;  // White queen
+  all_bitmaps_[5] = 0;  // White king
+  all_bitmaps_[6] = 0;  // Black pawns
+  all_bitmaps_[7] = 0;  // Black knights
+  all_bitmaps_[8] = 0;  // Black bishops
+  all_bitmaps_[9] = 0;  // Black rooks
+  all_bitmaps_[10] = 0; // Black queen
+  all_bitmaps_[11] = 0; // Black king
 
   castling_rights_ = CastlingRights::None;
   castling_rights_ |= CastlingRights::WhiteKingside;
