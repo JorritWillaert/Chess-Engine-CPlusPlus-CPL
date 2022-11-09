@@ -557,7 +557,7 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                 en_passant_moves;
   } else {
     uint64_t single_push = south(1ULL << from.index()) & ~all;
-    uint64_t double_push = south(single_push & RANK_5) & ~all;
+    uint64_t double_push = south(single_push & RANK_6) & ~all;
     uint64_t left_capture = south_west(1ULL << from.index()) & opponent;
     uint64_t right_capture = south_east(1ULL << from.index()) & opponent;
     if (enPassantSquare().has_value()) {
