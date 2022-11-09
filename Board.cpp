@@ -213,8 +213,7 @@ constexpr uint64_t getBlockersFromIndex(int i, uint64_t mask) {
   uint64_t blockers = 0;
   int bits = __builtin_popcountll(mask);
   for (int j = 0; j < bits; j++) {
-    int bitPos = __builtin_ffsll(mask) - 1;
-    mask &= mask - 1;
+    int bitPos = pop_lsb(mask);
     if (i & (1 << j)) {
       blockers |= (1ULL << bitPos);
     }
@@ -356,11 +355,10 @@ constexpr auto all_rook_moves{[]() constexpr {
 constexpr std::array<uint64_t, 64> bishop_masks{[]() constexpr {
   std::array<uint64_t, 64> masks{};
   for (int i = 0; i < 64; i++) {
-    masks[i] = (((DIAGONAL_NE << (i % 9) & ~UPPER_LEFT_TRIANGLE) |
-                 (DIAGONAL_NE << (i % 9) & ~LOWER_RIGHT_TRIANGLE)) |
-                ((DIAGONAL_NW >> (i % 7) & ~UPPER_RIGHT_TRIANGLE)) |
-                (DIAGONAL_NW >> (i % 7) & ~LOWER_LEFT_TRIANGLE)) &
-               ~(RANK_1 | RANK_8 | FILE_A | FILE_H);
+    masks[i] =
+        (all_north_east_loc_from_pos(i) | all_south_east_loc_from_pos(i) |
+         all_south_west_loc_from_pos(i) | all_north_west_loc_from_pos(i)) &
+        ~(RANK_1 | RANK_8 | FILE_A | FILE_H);
   }
   return masks;
 }()};
@@ -553,10 +551,12 @@ void Board::add_pseudo_bishop_moves(const Square &from,
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   uint64_t blockers = friendly | opponent;
-  blockers &=
-      ~(1ULL << from.index()); // The piece itself may not be seen as blocker
+  std::cout << "blockers start : " << blockers << std::endl;
+  clear_bit(blockers, from.index());
+  std::cout << "blockers now:" << blockers << std::endl;
 
   blockers &= bishop_masks[from.index()];
+  std::cout << "Mask: " << bishop_masks[from.index()] << std::endl;
   std::cout << "blockers: " << blockers << std::endl;
   uint64_t key = (blockers * BISHOPS_MAGICS[from.index()]) >>
                  (64 - BISHOPS_INDEX_BITS[from.index()]);
