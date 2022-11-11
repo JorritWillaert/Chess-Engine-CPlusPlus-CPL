@@ -221,46 +221,6 @@ constexpr uint64_t getBlockersFromIndex(int i, uint64_t mask) {
   return blockers;
 }
 
-/* TODO: keep in mind, here are you returning all possible moves, including the
- * ones where you HAVE to attack someone. Take care of this */
-constexpr uint64_t pawn_moves(uint64_t bitmap, bool is_white) {
-  if (is_white) {
-    uint64_t moves_from_start = north(north(bitmap & RANK_2));
-    uint64_t moves_from_not_start = north(bitmap);
-    uint64_t moves_up_right = north_east(bitmap);
-    uint64_t moves_up_left = north_west(bitmap);
-    return moves_from_start | moves_from_not_start | moves_up_right |
-           moves_up_left;
-  } else {
-    uint64_t moves_from_start = south(south(bitmap & RANK_7));
-    uint64_t moves_from_not_start = south(bitmap);
-    uint64_t moves_up_right = south_east(bitmap);
-    uint64_t moves_up_left = south_west(bitmap);
-    return moves_from_start | moves_from_not_start | moves_up_right |
-           moves_up_left;
-  }
-}
-constexpr auto all_pawn_moves_white{[]() constexpr {
-  std::array<uint64_t, 64> moves{};
-  for (int i = 0; i < 8; i++) {
-    moves[i] = 0; // Not possible that a pawn is located here
-  }
-  for (int i = 8; i < 64; i++) {
-    moves[i] = pawn_moves(1ULL << i, true);
-  }
-  return moves;
-}()};
-constexpr auto all_pawn_moves_black{[]() constexpr {
-  std::array<uint64_t, 64> moves{};
-  for (int i = 0; i < 56; i++) {
-    moves[i] = pawn_moves(1ULL << i, true);
-  }
-  for (int i = 56; i < 64; i++) {
-    moves[i] = 0; // Not possible that a pawn is located here
-  }
-  return moves;
-}()};
-
 constexpr uint64_t knight_moves(uint64_t bitmap) {
   return (((bitmap >> 6) | (bitmap << 10)) & ~FILE_GH) |
          (((bitmap >> 10) | (bitmap << 6)) & ~FILE_AB) |
