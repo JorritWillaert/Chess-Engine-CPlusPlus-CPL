@@ -509,15 +509,24 @@ void Board::makeMove(const Move &move) {
 
   // En passant updates
   if (piece.has_value() && piece.value().type() == PieceType::Pawn) {
+    if (enPassantSquare().has_value() && enPassantSquare().value() == to) {
+      if (piece.value().color() == PieceColor::White) {
+        Square squareToRemove = Square::fromIndex(to.index() - 8).value();
+        removePiece(squareToRemove, Board::piece(squareToRemove));
+      } else {
+        Square squareToRemove = Square::fromIndex(to.index() + 8).value();
+        removePiece(squareToRemove, Board::piece(squareToRemove));
+      }
+    }
     if (from.rank() == 1 && to.rank() == 3) {
-      en_passant_square_ = Square::fromIndex(to.index() - 8);
+      setEnPassantSquare(Square::fromIndex(to.index() - 8));
     } else if (from.rank() == 6 && to.rank() == 4) {
-      en_passant_square_ = Square::fromIndex(to.index() + 8);
+      setEnPassantSquare(Square::fromIndex(to.index() + 8));
     } else {
-      en_passant_square_ = std::nullopt;
+      setEnPassantSquare(std::nullopt);
     }
   } else {
-    en_passant_square_ = std::nullopt;
+    setEnPassantSquare(std::nullopt);
   }
 
   std::optional<PieceType> promotion = move.promotion();
@@ -564,10 +573,10 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
     uint64_t left_capture = north_west(1ULL << from.index()) & opponent;
     uint64_t right_capture = north_east(1ULL << from.index()) & opponent;
     if (enPassantSquare().has_value()) {
-      en_passant_moves |= north_west(1ULL << from.index()) &
-                          (1ULL << enPassantSquare().value().index());
-      en_passant_moves |= north_east(1ULL << from.index()) &
-                          (1ULL << enPassantSquare().value().index());
+      en_passant_moves |= (north_west(1ULL << from.index()) &
+                           (1ULL << enPassantSquare().value().index()));
+      en_passant_moves |= (north_east(1ULL << from.index()) &
+                           (1ULL << enPassantSquare().value().index()));
     }
     all_moves = single_push | double_push | left_capture | right_capture |
                 en_passant_moves;
@@ -577,10 +586,10 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
     uint64_t left_capture = south_west(1ULL << from.index()) & opponent;
     uint64_t right_capture = south_east(1ULL << from.index()) & opponent;
     if (enPassantSquare().has_value()) {
-      en_passant_moves |= south_west(1ULL << from.index()) &
-                          (1ULL << enPassantSquare().value().index());
-      en_passant_moves |= south_east(1ULL << from.index()) &
-                          (1ULL << enPassantSquare().value().index());
+      en_passant_moves |= (south_west(1ULL << from.index()) &
+                           (1ULL << enPassantSquare().value().index()));
+      en_passant_moves |= (south_east(1ULL << from.index()) &
+                           (1ULL << enPassantSquare().value().index()));
     }
     all_moves = single_push | double_push | left_capture | right_capture |
                 en_passant_moves;
