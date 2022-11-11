@@ -465,6 +465,46 @@ void Board::makeMove(const Move &move) {
   setPiece(to, piece);
   removePiece(from, piece);
 
+  if (piece.has_value() && piece.value().type() == PieceType::King) {
+    if (piece.value().color() == PieceColor::White) {
+      castling_rights_ &= ~CastlingRights::WhiteKingside;
+      castling_rights_ &= ~CastlingRights::WhiteQueenside;
+      if (from == Square::E1 && to == Square::G1) {
+        setPiece(Square::F1, Board::piece(Square::H1));
+        removePiece(Square::H1, Board::piece(Square::H1));
+      } else if (from == Square::E1 && to == Square::C1) {
+        setPiece(Square::D1, Board::piece(Square::A1));
+        removePiece(Square::A1, Board::piece(Square::A1));
+      }
+    } else {
+      castling_rights_ &= ~CastlingRights::BlackKingside;
+      castling_rights_ &= ~CastlingRights::BlackQueenside;
+      if (from == Square::E8 && to == Square::G8) {
+        setPiece(Square::F8, Board::piece(Square::H8));
+        removePiece(Square::H8, Board::piece(Square::H8));
+      } else if (from == Square::E8 && to == Square::C8) {
+        setPiece(Square::D8, Board::piece(Square::A8));
+        removePiece(Square::A8, Board::piece(Square::A8));
+      }
+    }
+  }
+
+  if (piece.has_value() && piece.value().type() == PieceType::Rook) {
+    if (piece.value().color() == PieceColor::White) {
+      if (from == Square::A1) {
+        castling_rights_ &= ~CastlingRights::WhiteQueenside;
+      } else if (from == Square::H1) {
+        castling_rights_ &= ~CastlingRights::WhiteKingside;
+      }
+    } else {
+      if (from == Square::A8) {
+        castling_rights_ &= ~CastlingRights::BlackQueenside;
+      } else if (from == Square::H8) {
+        castling_rights_ &= ~CastlingRights::BlackKingside;
+      }
+    }
+  }
+
   std::optional<PieceType> promotion = move.promotion();
   if (piece.has_value() && promotion.has_value()) {
     PieceType promotion_type = promotion.value();
