@@ -527,6 +527,7 @@ void Board::makeMove(const Move &move) {
     Piece promoted_piece = Piece(color, promotion_type);
     setPiece(to, promoted_piece);
   }
+  setTurn(!turn());
 }
 
 uint64_t Board::get_all_friendly_pieces() const {
