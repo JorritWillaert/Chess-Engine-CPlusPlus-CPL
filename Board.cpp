@@ -509,9 +509,9 @@ void Board::makeMove(const Move &move) {
 
   // En passant updates
   if (piece.has_value() && piece.value().type() == PieceType::Pawn) {
-    if (from.rank() == Rank::Second && to.rank() == Rank::Fourth) {
+    if (from.rank() == 1 && to.rank() == 3) {
       en_passant_square_ = Square::fromIndex(to.index() - 8);
-    } else if (from.rank() == Rank::Seventh && to.rank() == Rank::Fifth) {
+    } else if (from.rank() == 6 && to.rank() == 4) {
       en_passant_square_ = Square::fromIndex(to.index() + 8);
     } else {
       en_passant_square_ = std::nullopt;
