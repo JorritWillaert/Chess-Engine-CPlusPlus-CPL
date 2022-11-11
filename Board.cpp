@@ -465,6 +465,7 @@ void Board::makeMove(const Move &move) {
   setPiece(to, piece);
   removePiece(from, piece);
 
+  // Castling updates for king
   if (piece.has_value() && piece.value().type() == PieceType::King) {
     if (piece.value().color() == PieceColor::White) {
       castling_rights_ &= ~CastlingRights::WhiteKingside;
@@ -489,6 +490,7 @@ void Board::makeMove(const Move &move) {
     }
   }
 
+  // Castling updates for rook
   if (piece.has_value() && piece.value().type() == PieceType::Rook) {
     if (piece.value().color() == PieceColor::White) {
       if (from == Square::A1) {
@@ -503,6 +505,19 @@ void Board::makeMove(const Move &move) {
         castling_rights_ &= ~CastlingRights::BlackKingside;
       }
     }
+  }
+
+  // En passant updates
+  if (piece.has_value() && piece.value().type() == PieceType::Pawn) {
+    if (from.rank() == Rank::Second && to.rank() == Rank::Fourth) {
+      en_passant_square_ = Square::fromIndex(to.index() - 8);
+    } else if (from.rank() == Rank::Seventh && to.rank() == Rank::Fifth) {
+      en_passant_square_ = Square::fromIndex(to.index() + 8);
+    } else {
+      en_passant_square_ = std::nullopt;
+    }
+  } else {
+    en_passant_square_ = std::nullopt;
   }
 
   std::optional<PieceType> promotion = move.promotion();
@@ -644,6 +659,7 @@ void Board::add_pseudo_queen_moves(const Square &from,
 
 bool Board::square_under_attack_by_color(const Square &from,
                                          const PieceColor color) const {
+  (void)from;
   if (color == PieceColor::White) {
     return false;
     // return square_under_attack_by_white(from);
