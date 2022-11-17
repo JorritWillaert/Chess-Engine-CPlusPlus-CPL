@@ -667,18 +667,40 @@ void Board::add_pseudo_queen_moves(const Square &from,
   add_pseudo_rook_moves(from, moves);
 }
 
+bool check_pawn_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
+bool check_knight_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
+bool check_bishop_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
+bool check_rook_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
+bool check_queen_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
+bool check_king_to_square(const Square &from, const PieceColor color) const {
+  return false;
+}
+
 bool Board::square_under_attack_by_color(const Square &from,
                                          const PieceColor color) const {
-  (void)from;
-  if (color == PieceColor::White) {
-    return false;
-    // return square_under_attack_by_white(from);
-    // TODO!
-  } else {
-    return false;
-    // TODO!
-    // return square_under_attack_by_black(from);
+  if (check_pawn_to_square(from, color) ||
+      check_knight_to_square(from, color) ||
+      check_bishop_to_square(from, color) ||
+      check_rook_to_square(from, color) || check_queen_to_square(from, color) ||
+      check_king_to_square(from, color)) {
+    return true;
   }
+  return false;
 }
 
 uint64_t Board::get_castle_moves(const Square &from) const {
