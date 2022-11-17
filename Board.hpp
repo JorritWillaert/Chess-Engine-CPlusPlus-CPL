@@ -49,7 +49,7 @@ public:
   uint64_t get_knights(const PieceColor color) const;
   uint64_t get_bishops_and_queens(const PieceColor color) const;
   uint64_t get_rooks_and_queens(const PieceColor color) const;
-  uint64_t get_kings(const PieceColor color) const;
+  uint64_t get_king(const PieceColor color) const;
 
   uint64_t get_castle_moves(const Square &from) const;
 
@@ -64,6 +64,9 @@ public:
   bool check_rook_and_queen_to_square(const Square &square,
                                       const PieceColor color) const;
   bool check_king_to_square(const Square &square, const PieceColor color) const;
+
+  bool isCheck() const;
+  bool isMate() const;
 
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,

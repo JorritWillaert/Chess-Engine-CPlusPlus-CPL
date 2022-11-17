@@ -6,7 +6,7 @@
 PrincipalVariation::PrincipalVariation(Board board, TimeInfo::Optional timeInfo)
     : board_(board), timeInfo_(timeInfo) {}
 
-bool PrincipalVariation::isMate() const { return false; }
+bool PrincipalVariation::isMate() const { Board::isMate(); }
 
 int PrincipalVariation::score() const { return 0; }
 

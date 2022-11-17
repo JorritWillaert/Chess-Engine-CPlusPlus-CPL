@@ -608,7 +608,7 @@ uint64_t Board::get_rooks_and_queens(const PieceColor color) const {
   }
 }
 
-uint64_t Board::get_kings(const PieceColor color) const {
+uint64_t Board::get_king(const PieceColor color) const {
   if (color == PieceColor::White) {
     return all_bitmaps_[5];
   } else {
@@ -789,7 +789,7 @@ bool Board::check_rook_and_queen_to_square(const Square &to,
 
 bool Board::check_king_to_square(const Square &to,
                                  const PieceColor color) const {
-  const uint64_t opponent = get_kings(color);
+  const uint64_t opponent = get_king(color);
   uint64_t all_moves = all_king_moves[to.index()];
   all_moves &= opponent;
   if (all_moves) {
@@ -912,6 +912,14 @@ void Board::pseudoLegalMovesFrom(const Square &from,
     break;
   }
 }
+
+bool Board::isCheck() const {
+  uint64_t king = get_king(turn_);
+  Square king_square = Square::fromIndex(pop_lsb(king)).value();
+  return square_under_attack_by_color(king_square, !turn_);
+}
+
+bool Board::isMate() const {}
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {
   for (int rank = 7; rank >= 0; rank--) {
