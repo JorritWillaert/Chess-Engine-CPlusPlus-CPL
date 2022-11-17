@@ -799,16 +799,22 @@ uint64_t Board::get_castle_moves(const Square &from) const {
   uint64_t castle_moves = 0;
 
   if (from == Square::E1) {
-    if (castlingRights() == CastlingRights::WhiteKingside) {
+    std::cout << "FROM E1" << std::endl;
+    std::cout << "CASTLE_RIGHTS: " << castlingRights() << std::endl;
+    if ((castlingRights() & CastlingRights::WhiteKingside) !=
+        CastlingRights::None) {
+      std::cout << "WHITE KINGSIDE" << std::endl;
       if (!(square_under_attack_by_color(Square::E1, !turn_)) &&
           !(all & (1ULL << Square::F1.index())) &&
           !(square_under_attack_by_color(Square::F1, !turn_)) &&
           !(all & (1ULL << Square::G1.index())) &&
           !(square_under_attack_by_color(Square::G1, !turn_))) {
+        std::cout << "CASTLE" << std::endl;
         castle_moves |= 1ULL << Square::G1.index();
       }
     }
-    if (castlingRights() == CastlingRights::WhiteQueenside) {
+    if ((castlingRights() & CastlingRights::WhiteQueenside) !=
+        CastlingRights::None) {
       if (!(square_under_attack_by_color(Square::E1, !turn_)) &&
           !(all & (1ULL << Square::D1.index())) &&
           !(square_under_attack_by_color(Square::D1, !turn_)) &&
@@ -819,7 +825,8 @@ uint64_t Board::get_castle_moves(const Square &from) const {
       }
     }
   } else if (from == Square::E8) {
-    if (castlingRights() == CastlingRights::BlackKingside) {
+    if ((castlingRights() & CastlingRights::BlackKingside) !=
+        CastlingRights::None) {
       if (!(square_under_attack_by_color(Square::E8, !turn_)) &&
           !(all & (1ULL << Square::F8.index())) &&
           !(square_under_attack_by_color(Square::F8, !turn_)) &&
@@ -828,7 +835,8 @@ uint64_t Board::get_castle_moves(const Square &from) const {
         castle_moves |= 1ULL << Square::G8.index();
       }
     }
-    if (castlingRights() == CastlingRights::BlackQueenside) {
+    if ((castlingRights() & CastlingRights::BlackQueenside) !=
+        CastlingRights::None) {
       if (!(square_under_attack_by_color(Square::E8, !turn_)) &&
           !(all & (1ULL << Square::D8.index())) &&
           !(square_under_attack_by_color(Square::D8, !turn_)) &&
