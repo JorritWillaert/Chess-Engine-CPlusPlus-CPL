@@ -4,22 +4,26 @@
 #include "Move.hpp"
 #include "Piece.hpp"
 
-#include <iosfwd>
 #include <cstddef>
+#include <iosfwd>
+#include <memory>
+#include <vector>
 
 class PrincipalVariation {
 public:
+  using MoveIter = std::vector<std::unique_ptr<Move>>::const_iterator;
 
-    using MoveIter = Move*;
+  bool isMate() const;
+  int score() const;
 
-    bool isMate() const;
-    int score() const;
+  std::size_t length() const;
+  MoveIter begin() const;
+  MoveIter end() const;
 
-    std::size_t length() const;
-    MoveIter begin() const;
-    MoveIter end() const;
+private:
+  std::vector<std::unique_ptr<Move>> moves_;
 };
 
-std::ostream& operator<<(std::ostream& os, const PrincipalVariation& pv);
+std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv);
 
 #endif
