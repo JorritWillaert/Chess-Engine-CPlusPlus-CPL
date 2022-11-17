@@ -66,7 +66,6 @@ public:
   bool check_king_to_square(const Square &square, const PieceColor color) const;
 
   bool isCheck() const;
-  bool isMate() const;
 
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,

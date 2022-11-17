@@ -557,25 +557,6 @@ void Board::makeMove(const Move &move) {
   setTurn(!turn());
 }
 
-bool makeMoveIsCheck(const Move &move, Board &board) {
-  Square from = move.from();
-  Square to = move.to();
-  Piece::Optional piece = board.piece(from);
-  board.setPiece(to, piece);
-  board.removePiece(from, piece);
-
-  std::optional<PieceType> promotion = move.promotion();
-  if (piece.has_value() && promotion.has_value()) {
-    PieceType promotion_type = promotion.value();
-    PieceColor color = piece.value().color();
-    Piece promoted_piece = Piece(color, promotion_type);
-    board.removePiece(to, piece);
-    board.setPiece(to, promoted_piece);
-  }
-
-  return board.isCheck();
-}
-
 uint64_t Board::get_all_friendly_pieces() const {
   if (turn_ == PieceColor::White) {
     return all_bitmaps_[0] | all_bitmaps_[1] | all_bitmaps_[2] |
@@ -937,21 +918,6 @@ bool Board::isCheck() const {
   uint64_t king = get_king(turn_);
   Square king_square = Square::fromIndex(pop_lsb(king)).value();
   return square_under_attack_by_color(king_square, !turn_);
-}
-
-bool isMate(Board board) {
-  if (!board.isCheck()) {
-    return false;
-  }
-  Board::MoveVec moves;
-  board.pseudoLegalMoves(moves);
-  for (const Move &move : moves) {
-    Board new_board = board;
-    if (!makeMoveIsCheck(move, new_board)) {
-      return false;
-    }
-  }
-  return true;
 }
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {

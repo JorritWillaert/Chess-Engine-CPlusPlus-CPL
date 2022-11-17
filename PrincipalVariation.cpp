@@ -6,7 +6,39 @@
 PrincipalVariation::PrincipalVariation(Board board, TimeInfo::Optional timeInfo)
     : board_(board), timeInfo_(timeInfo) {}
 
-bool PrincipalVariation::isMate() const { return board_.isMate(); }
+bool makeMoveIsCheck(const Move &move, Board &board) {
+  Square from = move.from();
+  Square to = move.to();
+  Piece::Optional piece = board.piece(from);
+  board.setPiece(to, piece);
+  board.removePiece(from, piece);
+
+  std::optional<PieceType> promotion = move.promotion();
+  if (piece.has_value() && promotion.has_value()) {
+    PieceType promotion_type = promotion.value();
+    PieceColor color = piece.value().color();
+    Piece promoted_piece = Piece(color, promotion_type);
+    board.removePiece(to, piece);
+    board.setPiece(to, promoted_piece);
+  }
+
+  return board.isCheck();
+}
+
+bool PrincipalVariation::isMate() const {
+  if (!board_.isCheck()) {
+    return false;
+  }
+  Board::MoveVec moves;
+  board_.pseudoLegalMoves(moves);
+  for (const Move &move : moves) {
+    Board new_board = board_;
+    if (!makeMoveIsCheck(move, new_board)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 int PrincipalVariation::score() const { return 0; }
 
