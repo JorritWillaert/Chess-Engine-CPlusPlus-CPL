@@ -11,7 +11,7 @@
 
 class PrincipalVariation {
 public:
-  using MoveIter = std::vector<std::unique_ptr<Move>>::const_iterator;
+  using MoveIter = std::vector<Move>::const_iterator;
 
   bool isMate() const;
   int score() const;
@@ -21,7 +21,7 @@ public:
   MoveIter end() const;
 
 private:
-  std::vector<std::unique_ptr<Move>> moves_;
+  std::vector<Move> moves_;
 };
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv);

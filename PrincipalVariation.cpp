@@ -18,8 +18,8 @@ PrincipalVariation::MoveIter PrincipalVariation::end() const {
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv) {
   os << "Principal Variation:\n";
-  for (const auto &move : pv) {
-    os << *move << ' ';
+  for (const Move move : pv) {
+    os << move << ' ';
   }
   os << '\n';
   return os;
