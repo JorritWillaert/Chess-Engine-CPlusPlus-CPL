@@ -800,7 +800,8 @@ uint64_t Board::get_castle_moves(const Square &from) const {
 
   if (from == Square::E1) {
     if (castlingRights() == CastlingRights::WhiteKingside) {
-      if (!(all & (1ULL << Square::F1.index())) &&
+      if (!(square_under_attack_by_color(Square::E1, !turn_)) &&
+          !(all & (1ULL << Square::F1.index())) &&
           !(square_under_attack_by_color(Square::F1, !turn_)) &&
           !(all & (1ULL << Square::G1.index())) &&
           !(square_under_attack_by_color(Square::G1, !turn_))) {
@@ -808,18 +809,19 @@ uint64_t Board::get_castle_moves(const Square &from) const {
       }
     }
     if (castlingRights() == CastlingRights::WhiteQueenside) {
-      if (!(all & (1ULL << Square::D1.index())) &&
+      if (!(square_under_attack_by_color(Square::E1, !turn_)) &&
+          !(all & (1ULL << Square::D1.index())) &&
           !(square_under_attack_by_color(Square::D1, !turn_)) &&
           !(all & (1ULL << Square::C1.index())) &&
           !(square_under_attack_by_color(Square::C1, !turn_)) &&
-          !(all & (1ULL << Square::B1.index())) &&
-          !(square_under_attack_by_color(Square::B1, !turn_))) {
+          !(all & (1ULL << Square::B1.index()))) {
         castle_moves |= 1ULL << Square::C1.index();
       }
     }
   } else if (from == Square::E8) {
     if (castlingRights() == CastlingRights::BlackKingside) {
-      if (!(all & (1ULL << Square::F8.index())) &&
+      if (!(square_under_attack_by_color(Square::E8, !turn_)) &&
+          !(all & (1ULL << Square::F8.index())) &&
           !(square_under_attack_by_color(Square::F8, !turn_)) &&
           !(all & (1ULL << Square::G8.index())) &&
           !(square_under_attack_by_color(Square::G8, !turn_))) {
@@ -827,12 +829,12 @@ uint64_t Board::get_castle_moves(const Square &from) const {
       }
     }
     if (castlingRights() == CastlingRights::BlackQueenside) {
-      if (!(all & (1ULL << Square::D8.index())) &&
+      if (!(square_under_attack_by_color(Square::E8, !turn_)) &&
+          !(all & (1ULL << Square::D8.index())) &&
           !(square_under_attack_by_color(Square::D8, !turn_)) &&
           !(all & (1ULL << Square::C8.index())) &&
           !(square_under_attack_by_color(Square::C8, !turn_)) &&
-          !(all & (1ULL << Square::B8.index())) &&
-          !(square_under_attack_by_color(Square::B8, !turn_))) {
+          !(all & (1ULL << Square::B8.index()))) {
         castle_moves |= 1ULL << Square::C8.index();
       }
     }
