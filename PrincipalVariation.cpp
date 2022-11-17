@@ -1,6 +1,10 @@
 #include "PrincipalVariation.hpp"
+#include "Board.hpp"
 
 #include <ostream>
+
+PrincipalVariation::PrincipalVariation(Board board, TimeInfo::Optional timeInfo)
+    : board_(board), timeInfo_(timeInfo) {}
 
 bool PrincipalVariation::isMate() const { return false; }
 
