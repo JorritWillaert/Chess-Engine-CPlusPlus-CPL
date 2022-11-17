@@ -667,7 +667,7 @@ void Board::add_pseudo_queen_moves(const Square &from,
   add_pseudo_rook_moves(from, moves);
 }
 
-bool Board::check_pawn_to_square(const Square &from,
+bool Board::check_pawn_to_square(const Square &to,
                                  const PieceColor color) const {
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
@@ -675,54 +675,58 @@ bool Board::check_pawn_to_square(const Square &from,
   uint64_t all_moves;
 
   if (color == PieceColor::White) {
-    uint64_t single_push = north(1ULL << from.index()) & ~all;
-    uint64_t left_capture = north_west(1ULL << from.index()) & opponent;
-    uint64_t right_capture = north_east(1ULL << from.index()) & opponent;
-    all_moves = single_push | left_capture | right_capture;
+    uint64_t made_single_push = south(1ULL << to.index()) & opponent;
+    uint64_t made_left_capture = south_west(1ULL << to.index()) & opponent;
+    uint64_t made_right_capture = south_east(1ULL << to.index()) & opponent;
+    all_moves = made_single_push | made_left_capture | made_right_capture;
   } else {
-    uint64_t single_push = south(1ULL << from.index()) & ~all;
-    uint64_t left_capture = south_west(1ULL << from.index()) & opponent;
-    uint64_t right_capture = south_east(1ULL << from.index()) & opponent;
-    all_moves = single_push | left_capture | right_capture;
+    uint64_t made_single_push = north(1ULL << to.index()) & opponent;
+    uint64_t made_left_capture = north(1ULL << to.index()) & opponent;
+    uint64_t made_right_capture = north(1ULL << to.index()) & opponent;
+    all_moves = made_single_push | made_left_capture | made_right_capture;
   }
-  if (all_moves & (1ULL << from.index())) {
+  if (all_moves) {
     return true;
   }
   return false;
 }
 
-bool Board::check_knight_to_square(const Square &from,
+bool Board::check_knight_to_square(const Square &to,
+                                   const PieceColor color) const {
+  const uint64_t opponent = get_all_opponent_pieces();
+  uint64_t all_moves = all_knight_moves[to.index()];
+  all_moves &= opponent;
+  if (all_moves) {
+    return true;
+  }
+  return false;
+}
+
+bool Board::check_bishop_to_square(const Square &to,
                                    const PieceColor color) const {
   return false;
 }
 
-bool Board::check_bishop_to_square(const Square &from,
-                                   const PieceColor color) const {
-  return false;
-}
-
-bool Board::check_rook_to_square(const Square &from,
+bool Board::check_rook_to_square(const Square &to,
                                  const PieceColor color) const {
   return false;
 }
 
-bool Board::check_queen_to_square(const Square &from,
+bool Board::check_queen_to_square(const Square &to,
                                   const PieceColor color) const {
   return false;
 }
 
-bool Board::check_king_to_square(const Square &from,
+bool Board::check_king_to_square(const Square &to,
                                  const PieceColor color) const {
   return false;
 }
 
-bool Board::square_under_attack_by_color(const Square &from,
+bool Board::square_under_attack_by_color(const Square &to,
                                          const PieceColor color) const {
-  if (check_pawn_to_square(from, color) ||
-      check_knight_to_square(from, color) ||
-      check_bishop_to_square(from, color) ||
-      check_rook_to_square(from, color) || check_queen_to_square(from, color) ||
-      check_king_to_square(from, color)) {
+  if (check_pawn_to_square(to, color) || check_knight_to_square(to, color) ||
+      check_bishop_to_square(to, color) || check_rook_to_square(to, color) ||
+      check_queen_to_square(to, color) || check_king_to_square(to, color)) {
     return true;
   }
   return false;
