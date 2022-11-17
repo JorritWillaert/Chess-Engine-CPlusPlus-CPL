@@ -719,6 +719,12 @@ bool Board::check_queen_to_square(const Square &to,
 
 bool Board::check_king_to_square(const Square &to,
                                  const PieceColor color) const {
+  const uint64_t opponent = get_all_opponent_pieces();
+  uint64_t all_moves = all_king_moves[to.index()];
+  all_moves &= opponent;
+  if (all_moves) {
+    return true;
+  }
   return false;
 }
 
