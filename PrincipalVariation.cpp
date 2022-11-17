@@ -6,7 +6,7 @@ bool PrincipalVariation::isMate() const { return false; }
 
 int PrincipalVariation::score() const { return 0; }
 
-std::size_t PrincipalVariation::length() const { return 0; }
+std::size_t PrincipalVariation::length() const { return moves_.size(); }
 
 PrincipalVariation::MoveIter PrincipalVariation::begin() const {
   return moves_.begin();
@@ -17,6 +17,10 @@ PrincipalVariation::MoveIter PrincipalVariation::end() const {
 }
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv) {
-  (void)pv;
+  os << "Principal Variation:\n";
+  for (const auto &move : pv) {
+    os << *move << ' ';
+  }
+  os << '\n';
   return os;
 }
