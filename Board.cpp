@@ -551,6 +551,7 @@ void Board::makeMove(const Move &move) {
     PieceType promotion_type = promotion.value();
     PieceColor color = piece.value().color();
     Piece promoted_piece = Piece(color, promotion_type);
+    removePiece(to, piece);
     setPiece(to, promoted_piece);
   }
   setTurn(!turn());
@@ -919,7 +920,12 @@ bool Board::isCheck() const {
   return square_under_attack_by_color(king_square, !turn_);
 }
 
-bool Board::isMate() const {}
+bool Board::isMate() const {
+  if (!isCheck()) {
+    return false;
+  }
+  return false;
+}
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {
   for (int rank = 7; rank >= 0; rank--) {
