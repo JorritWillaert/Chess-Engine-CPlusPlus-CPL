@@ -6,6 +6,7 @@
 #include "Piece.hpp"
 #include "Square.hpp"
 
+#include <cstdint>
 #include <iosfwd>
 #include <optional>
 #include <vector>
@@ -36,12 +37,19 @@ public:
                              const PieceColor color) const;
   void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) const;
+  uint64_t generate_pseudo_bishop_moves(const Square &from) const;
   void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) const;
+  uint64_t generate_pseudo_rook_moves(const Square &from) const;
   void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) const;
 
   uint64_t get_all_friendly_pieces() const;
   uint64_t get_all_opponent_pieces() const;
+  uint64_t get_pawns(const PieceColor color) const;
+  uint64_t get_knights(const PieceColor color) const;
+  uint64_t get_bishops_and_queens(const PieceColor color) const;
+  uint64_t get_rooks_and_queens(const PieceColor color) const;
+  uint64_t get_kings(const PieceColor color) const;
 
   uint64_t get_castle_moves(const Square &from) const;
 
@@ -51,11 +59,10 @@ public:
   bool check_pawn_to_square(const Square &square, const PieceColor color) const;
   bool check_knight_to_square(const Square &square,
                               const PieceColor color) const;
-  bool check_bishop_to_square(const Square &square,
-                              const PieceColor color) const;
-  bool check_rook_to_square(const Square &square, const PieceColor color) const;
-  bool check_queen_to_square(const Square &square,
-                             const PieceColor color) const;
+  bool check_bishop_and_queen_to_square(const Square &square,
+                                        const PieceColor color) const;
+  bool check_rook_and_queen_to_square(const Square &square,
+                                      const PieceColor color) const;
   bool check_king_to_square(const Square &square, const PieceColor color) const;
 
 private:

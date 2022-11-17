@@ -559,6 +559,46 @@ uint64_t Board::get_all_opponent_pieces() const {
   }
 }
 
+uint64_t Board::get_pawns(const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return all_bitmaps_[0];
+  } else {
+    return all_bitmaps_[6];
+  }
+}
+
+uint64_t Board::get_knights(const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return all_bitmaps_[1];
+  } else {
+    return all_bitmaps_[7];
+  }
+}
+
+uint64_t Board::get_bishops_and_queens(const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return all_bitmaps_[2] | all_bitmaps_[4];
+  } else {
+    return all_bitmaps_[8] | all_bitmaps_[10];
+  }
+}
+
+uint64_t Board::get_rooks_and_queens(const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return all_bitmaps_[3] | all_bitmaps_[4];
+  } else {
+    return all_bitmaps_[9] | all_bitmaps_[10];
+  }
+}
+
+uint64_t Board::get_kings(const PieceColor color) const {
+  if (color == PieceColor::White) {
+    return all_bitmaps_[5];
+  } else {
+    return all_bitmaps_[11];
+  }
+}
+
 void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                                   const PieceColor color) const {
   const uint64_t friendly = get_all_friendly_pieces();
@@ -623,8 +663,7 @@ void Board::add_pseudo_knight_moves(const Square &from,
   }
 }
 
-void Board::add_pseudo_bishop_moves(const Square &from,
-                                    Board::MoveVec &moves) const {
+uint64_t Board::generate_pseudo_bishop_moves(const Square &from) const {
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   uint64_t blockers = friendly | opponent;
@@ -635,15 +674,19 @@ void Board::add_pseudo_bishop_moves(const Square &from,
                  (64 - BISHOPS_INDEX_BITS[from.index()]);
   uint64_t all_moves = all_bishop_moves[from.index()][key];
   all_moves &= ~friendly; // You can't attack your own pieces
+  return all_moves;
+}
 
+void Board::add_pseudo_bishop_moves(const Square &from,
+                                    Board::MoveVec &moves) const {
+  uint64_t all_moves = generate_pseudo_bishop_moves(from);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
   }
 }
 
-void Board::add_pseudo_rook_moves(const Square &from,
-                                  Board::MoveVec &moves) const {
+uint64_t Board::generate_pseudo_rook_moves(const Square &from) const {
   const uint64_t friendly = get_all_friendly_pieces();
   const uint64_t opponent = get_all_opponent_pieces();
   uint64_t blockers = friendly | opponent;
@@ -654,7 +697,12 @@ void Board::add_pseudo_rook_moves(const Square &from,
                  (64 - ROOKS_INDEX_BITS[from.index()]);
   uint64_t all_moves = all_rook_moves[from.index()][key];
   all_moves &= ~friendly; // You can't attack your own pieces
+  return all_moves;
+}
 
+void Board::add_pseudo_rook_moves(const Square &from,
+                                  Board::MoveVec &moves) const {
+  uint64_t all_moves = generate_pseudo_rook_moves(from);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
@@ -669,20 +717,20 @@ void Board::add_pseudo_queen_moves(const Square &from,
 
 bool Board::check_pawn_to_square(const Square &to,
                                  const PieceColor color) const {
-  const uint64_t friendly = get_all_friendly_pieces();
-  const uint64_t opponent = get_all_opponent_pieces();
-  const uint64_t all = friendly | opponent;
+  const uint64_t opponent_pawns = get_pawns(color);
   uint64_t all_moves;
 
   if (color == PieceColor::White) {
-    uint64_t made_single_push = south(1ULL << to.index()) & opponent;
-    uint64_t made_left_capture = south_west(1ULL << to.index()) & opponent;
-    uint64_t made_right_capture = south_east(1ULL << to.index()) & opponent;
+    uint64_t made_single_push = south(1ULL << to.index()) & opponent_pawns;
+    uint64_t made_left_capture =
+        south_west(1ULL << to.index()) & opponent_pawns;
+    uint64_t made_right_capture =
+        south_east(1ULL << to.index()) & opponent_pawns;
     all_moves = made_single_push | made_left_capture | made_right_capture;
   } else {
-    uint64_t made_single_push = north(1ULL << to.index()) & opponent;
-    uint64_t made_left_capture = north(1ULL << to.index()) & opponent;
-    uint64_t made_right_capture = north(1ULL << to.index()) & opponent;
+    uint64_t made_single_push = north(1ULL << to.index()) & opponent_pawns;
+    uint64_t made_left_capture = north(1ULL << to.index()) & opponent_pawns;
+    uint64_t made_right_capture = north(1ULL << to.index()) & opponent_pawns;
     all_moves = made_single_push | made_left_capture | made_right_capture;
   }
   if (all_moves) {
@@ -693,7 +741,7 @@ bool Board::check_pawn_to_square(const Square &to,
 
 bool Board::check_knight_to_square(const Square &to,
                                    const PieceColor color) const {
-  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t opponent = get_knights(color);
   uint64_t all_moves = all_knight_moves[to.index()];
   all_moves &= opponent;
   if (all_moves) {
@@ -702,24 +750,29 @@ bool Board::check_knight_to_square(const Square &to,
   return false;
 }
 
-bool Board::check_bishop_to_square(const Square &to,
-                                   const PieceColor color) const {
+bool Board::check_bishop_and_queen_to_square(const Square &to,
+                                             const PieceColor color) const {
+  uint64_t all_moves = generate_pseudo_bishop_moves(to);
+  all_moves &= get_bishops_and_queens(color);
+  if (all_moves) {
+    return true;
+  }
   return false;
 }
 
-bool Board::check_rook_to_square(const Square &to,
-                                 const PieceColor color) const {
-  return false;
-}
-
-bool Board::check_queen_to_square(const Square &to,
-                                  const PieceColor color) const {
+bool Board::check_rook_and_queen_to_square(const Square &to,
+                                           const PieceColor color) const {
+  uint64_t all_moves = generate_pseudo_rook_moves(to);
+  all_moves &= get_rooks_and_queens(color);
+  if (all_moves) {
+    return true;
+  }
   return false;
 }
 
 bool Board::check_king_to_square(const Square &to,
                                  const PieceColor color) const {
-  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t opponent = get_kings(color);
   uint64_t all_moves = all_king_moves[to.index()];
   all_moves &= opponent;
   if (all_moves) {
@@ -731,8 +784,9 @@ bool Board::check_king_to_square(const Square &to,
 bool Board::square_under_attack_by_color(const Square &to,
                                          const PieceColor color) const {
   if (check_pawn_to_square(to, color) || check_knight_to_square(to, color) ||
-      check_bishop_to_square(to, color) || check_rook_to_square(to, color) ||
-      check_queen_to_square(to, color) || check_king_to_square(to, color)) {
+      check_bishop_and_queen_to_square(to, color) ||
+      check_rook_and_queen_to_square(to, color) ||
+      check_king_to_square(to, color)) {
     return true;
   }
   return false;
