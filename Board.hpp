@@ -48,6 +48,16 @@ public:
   bool square_under_attack_by_color(const Square &square,
                                     const PieceColor color) const;
 
+  bool check_pawn_to_square(const Square &square, const PieceColor color) const;
+  bool check_knight_to_square(const Square &square,
+                              const PieceColor color) const;
+  bool check_bishop_to_square(const Square &square,
+                              const PieceColor color) const;
+  bool check_rook_to_square(const Square &square, const PieceColor color) const;
+  bool check_queen_to_square(const Square &square,
+                             const PieceColor color) const;
+  bool check_king_to_square(const Square &square, const PieceColor color) const;
+
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
                              // WhiteQueen, WhiteKing, BlackPawn, BlackKnight,
