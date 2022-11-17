@@ -36,6 +36,7 @@ add_library(cplchess_lib OBJECT
     Engine.cpp
     EngineFactory.cpp
     Uci.cpp
+    EngineJorritWillaert.cpp
 )
 
 target_include_directories(cplchess_lib PUBLIC .)
