@@ -507,6 +507,23 @@ void Board::makeMove(const Move &move) {
     }
   }
 
+  // Updates for capturing rooks and kings
+  if (move.to() == Square::A1) {
+    castling_rights_ &= ~CastlingRights::WhiteQueenside;
+  } else if (move.to() == Square::H1) {
+    castling_rights_ &= ~CastlingRights::WhiteKingside;
+  } else if (move.to() == Square::A8) {
+    castling_rights_ &= ~CastlingRights::BlackQueenside;
+  } else if (move.to() == Square::H8) {
+    castling_rights_ &= ~CastlingRights::BlackKingside;
+  } else if (move.to() == Square::E1) {
+    castling_rights_ &= ~CastlingRights::WhiteKingside;
+    castling_rights_ &= ~CastlingRights::WhiteQueenside;
+  } else if (move.to() == Square::E8) {
+    castling_rights_ &= ~CastlingRights::BlackKingside;
+    castling_rights_ &= ~CastlingRights::BlackQueenside;
+  }
+
   // En passant updates
   if (piece.has_value() && piece.value().type() == PieceType::Pawn) {
     if (enPassantSquare().has_value() && enPassantSquare().value() == to) {
@@ -799,17 +816,13 @@ uint64_t Board::get_castle_moves(const Square &from) const {
   uint64_t castle_moves = 0;
 
   if (from == Square::E1) {
-    std::cout << "FROM E1" << std::endl;
-    std::cout << "CASTLE_RIGHTS: " << castlingRights() << std::endl;
     if ((castlingRights() & CastlingRights::WhiteKingside) !=
         CastlingRights::None) {
-      std::cout << "WHITE KINGSIDE" << std::endl;
       if (!(square_under_attack_by_color(Square::E1, !turn_)) &&
           !(all & (1ULL << Square::F1.index())) &&
           !(square_under_attack_by_color(Square::F1, !turn_)) &&
           !(all & (1ULL << Square::G1.index())) &&
           !(square_under_attack_by_color(Square::G1, !turn_))) {
-        std::cout << "CASTLE" << std::endl;
         castle_moves |= 1ULL << Square::G1.index();
       }
     }
