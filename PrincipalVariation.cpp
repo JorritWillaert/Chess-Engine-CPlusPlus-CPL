@@ -6,25 +6,6 @@
 PrincipalVariation::PrincipalVariation()
     : isMate_(false), isDraw_(false), score_(0) {}
 
-// bool makeMoveIsCheck(const Move &move, Board &board) {
-//   Square from = move.from();
-//   Square to = move.to();
-//   Piece::Optional piece = board.piece(from);
-//   board.setPiece(to, piece);
-//   board.removePiece(from, piece);
-
-//   std::optional<PieceType> promotion = move.promotion();
-//   if (piece.has_value() && promotion.has_value()) {
-//     PieceType promotion_type = promotion.value();
-//     PieceColor color = piece.value().color();
-//     Piece promoted_piece = Piece(color, promotion_type);
-//     board.removePiece(to, piece);
-//     board.setPiece(to, promoted_piece);
-//   }
-
-//   return board.isCheck();
-// }
-
 bool PrincipalVariation::isMate() const {
   return isMate_;
   // if (!boards_.back().isCheck()) {
