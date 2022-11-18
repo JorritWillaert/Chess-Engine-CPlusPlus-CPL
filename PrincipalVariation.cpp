@@ -3,51 +3,45 @@
 
 #include <ostream>
 
-PrincipalVariation::PrincipalVariation(Board startBoard,
-                                       TimeInfo::Optional timeInfo)
-    : timeInfo_(timeInfo) {
-  boards_.push_back(startBoard);
-}
+PrincipalVariation::PrincipalVariation()
+    : isMate_(false), isDraw_(false), score_(0) {}
 
-bool makeMoveIsCheck(const Move &move, Board &board) {
-  Square from = move.from();
-  Square to = move.to();
-  Piece::Optional piece = board.piece(from);
-  board.setPiece(to, piece);
-  board.removePiece(from, piece);
+// bool makeMoveIsCheck(const Move &move, Board &board) {
+//   Square from = move.from();
+//   Square to = move.to();
+//   Piece::Optional piece = board.piece(from);
+//   board.setPiece(to, piece);
+//   board.removePiece(from, piece);
 
-  std::optional<PieceType> promotion = move.promotion();
-  if (piece.has_value() && promotion.has_value()) {
-    PieceType promotion_type = promotion.value();
-    PieceColor color = piece.value().color();
-    Piece promoted_piece = Piece(color, promotion_type);
-    board.removePiece(to, piece);
-    board.setPiece(to, promoted_piece);
-  }
+//   std::optional<PieceType> promotion = move.promotion();
+//   if (piece.has_value() && promotion.has_value()) {
+//     PieceType promotion_type = promotion.value();
+//     PieceColor color = piece.value().color();
+//     Piece promoted_piece = Piece(color, promotion_type);
+//     board.removePiece(to, piece);
+//     board.setPiece(to, promoted_piece);
+//   }
 
-  return board.isCheck();
-}
+//   return board.isCheck();
+// }
 
 bool PrincipalVariation::isMate() const {
-  if (!boards_.back().isCheck()) {
-    return false;
-  }
-  Board::MoveVec moves;
-  boards_.back().pseudoLegalMoves(moves);
-  for (const Move &move : moves) {
-    Board new_board = boards_.back();
-    if (!makeMoveIsCheck(move, new_board)) {
-      return false;
-    }
-  }
-  return true;
+  return isMate_;
+  // if (!boards_.back().isCheck()) {
+  //   return false;
+  // }
+  // Board::MoveVec moves;
+  // boards_.back().pseudoLegalMoves(moves);
+  // for (const Move &move : moves) {
+  //   Board new_board = boards_.back();
+  //   if (!makeMoveIsCheck(move, new_board)) {
+  //     return false;
+  //   }
+  // }
+  // return true;
 }
 
-int PrincipalVariation::score() const {
-  if (isMate())
-    return length();
-  return 0;
-}
+int PrincipalVariation::score() const { return score_; }
 
 std::size_t PrincipalVariation::length() const { return moves_.size(); }
 

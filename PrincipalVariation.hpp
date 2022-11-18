@@ -13,12 +13,18 @@
 
 class PrincipalVariation {
 public:
-  PrincipalVariation(Board startBoard, TimeInfo::Optional timeInfo);
+  PrincipalVariation();
 
   using MoveIter = std::vector<Move>::const_iterator;
 
   bool isMate() const;
+  bool isDraw() const;
   int score() const;
+
+  void addMove(Move move);
+  void setMate(const bool mate);
+  void setDraw(const bool draw);
+  void setScore(const int score);
 
   std::size_t length() const;
   MoveIter begin() const;
@@ -27,7 +33,9 @@ public:
 private:
   TimeInfo::Optional timeInfo_;
   std::vector<Move> moves_;
-  std::vector<Board> boards_;
+  bool isMate_;
+  bool isDraw_;
+  int score_;
 };
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv);
