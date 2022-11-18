@@ -13,7 +13,7 @@
 
 class PrincipalVariation {
 public:
-  PrincipalVariation(Board board, TimeInfo::Optional timeInfo);
+  PrincipalVariation(Board startBoard, TimeInfo::Optional timeInfo);
 
   using MoveIter = std::vector<Move>::const_iterator;
 
@@ -25,9 +25,9 @@ public:
   MoveIter end() const;
 
 private:
-  Board board_;
   TimeInfo::Optional timeInfo_;
   std::vector<Move> moves_;
+  std::vector<Board> boards_;
 };
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv);

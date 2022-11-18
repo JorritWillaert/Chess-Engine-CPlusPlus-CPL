@@ -3,8 +3,11 @@
 
 #include <ostream>
 
-PrincipalVariation::PrincipalVariation(Board board, TimeInfo::Optional timeInfo)
-    : board_(board), timeInfo_(timeInfo) {}
+PrincipalVariation::PrincipalVariation(Board startBoard,
+                                       TimeInfo::Optional timeInfo)
+    : timeInfo_(timeInfo) {
+  boards_.push_back(startBoard);
+}
 
 bool makeMoveIsCheck(const Move &move, Board &board) {
   Square from = move.from();
@@ -26,13 +29,13 @@ bool makeMoveIsCheck(const Move &move, Board &board) {
 }
 
 bool PrincipalVariation::isMate() const {
-  if (!board_.isCheck()) {
+  if (!boards_.back().isCheck()) {
     return false;
   }
   Board::MoveVec moves;
-  board_.pseudoLegalMoves(moves);
+  boards_.back().pseudoLegalMoves(moves);
   for (const Move &move : moves) {
-    Board new_board = board_;
+    Board new_board = boards_.back();
     if (!makeMoveIsCheck(move, new_board)) {
       return false;
     }
@@ -40,7 +43,11 @@ bool PrincipalVariation::isMate() const {
   return true;
 }
 
-int PrincipalVariation::score() const { return 0; }
+int PrincipalVariation::score() const {
+  if (isMate())
+    return length();
+  return 0;
+}
 
 std::size_t PrincipalVariation::length() const { return moves_.size(); }
 
