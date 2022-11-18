@@ -11,5 +11,5 @@ void EngineJorritWillaert::newGame() {}
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
-  return PrincipalVariation(board, timeInfo);
+  return PrincipalVariation();
 }
