@@ -21,7 +21,7 @@ public:
   bool isDraw() const;
   int score() const;
 
-  void addMove(Move move);
+  void addFront(const Move &move);
   void setMate(const bool mate);
   void setDraw(const bool draw);
   void setScore(const int score);

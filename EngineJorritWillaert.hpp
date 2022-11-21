@@ -15,6 +15,11 @@ public:
   PrincipalVariation
   pv(const Board &board,
      const TimeInfo::Optional &timeInfo = std::nullopt) override;
+
+  int alphaBetaMax(int alpha, int beta, int depthLeft, Board &board,
+                   PrincipalVariation &pv);
+  int alphaBetaMin(int alpha, int beta, int depthLeft, Board &board,
+                   PrincipalVariation &pv);
 };
 
 #endif

@@ -34,6 +34,10 @@ PrincipalVariation::MoveIter PrincipalVariation::end() const {
   return moves_.end();
 }
 
+void PrincipalVariation::addFront(const Move &move) {
+  moves_.insert(moves_.begin(), move);
+}
+
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv) {
   os << "Principal Variation:\n";
   for (const Move move : pv) {
