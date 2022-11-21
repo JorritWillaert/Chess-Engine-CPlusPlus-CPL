@@ -3,8 +3,7 @@
 
 #include <ostream>
 
-PrincipalVariation::PrincipalVariation()
-    : isMate_(false), isDraw_(false), score_(0) {}
+PrincipalVariation::PrincipalVariation() : isMate_(false), score_(0) {}
 
 bool PrincipalVariation::isMate() const {
   return isMate_;

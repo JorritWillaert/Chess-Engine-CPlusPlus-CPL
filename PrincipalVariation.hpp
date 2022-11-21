@@ -18,12 +18,10 @@ public:
   using MoveIter = std::vector<Move>::const_iterator;
 
   bool isMate() const;
-  bool isDraw() const;
   int score() const;
 
   void addFront(const Move &move);
   void setMate(const bool mate);
-  void setDraw(const bool draw);
   void setScore(const int score);
 
   std::size_t length() const;
@@ -33,9 +31,8 @@ public:
 private:
   TimeInfo::Optional timeInfo_;
   std::vector<Move> moves_;
-  bool isMate_;
-  bool isDraw_;
-  int score_;
+  bool isMate_ = false;
+  int score_ = 0;
 };
 
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv);

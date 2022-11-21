@@ -18,10 +18,14 @@ int calculateScore(const Board &board) {
   return 0; // TODO calculate the actual score
 }
 
-int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depthLeft,
-                                       Board &board, PrincipalVariation &pv) {
-  if (depthLeft == 0) {
+int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
+                                       int maxDepth, const Board &board,
+                                       PrincipalVariation &principVar) {
+  if (depth == maxDepth) {
     return calculateScore(board);
+  }
+  if (board.isCheck()) {
+    return depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
@@ -29,7 +33,8 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depthLeft,
   for (Move move : moves) {
     Board newBoard = board;
     newBoard.makeMove(move);
-    int score = alphaBetaMin(alpha, beta, depthLeft - 1, newBoard, pv);
+    int score =
+        alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
     if (score >= beta) {
       return beta;
     }
@@ -38,14 +43,18 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depthLeft,
       bestMove = &move;
     }
   }
-  pv.addFront(*bestMove);
+  principVar.addFront(*bestMove);
   return alpha;
 }
 
-int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depthLeft,
-                                       Board &board, PrincipalVariation &pv) {
-  if (depthLeft == 0) {
+int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
+                                       int maxDepth, const Board &board,
+                                       PrincipalVariation &principVar) {
+  if (depth == maxDepth) {
     return calculateScore(board);
+  }
+  if (board.isCheck()) {
+    return depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
@@ -53,7 +62,8 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depthLeft,
   for (Move move : moves) {
     Board newBoard = board;
     newBoard.makeMove(move);
-    int score = alphaBetaMax(alpha, beta, depthLeft - 1, newBoard, pv);
+    int score =
+        alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
     if (score <= alpha) {
       return alpha;
     }
@@ -62,7 +72,7 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depthLeft,
       bestMove = &move;
     }
   }
-  pv.addFront(*bestMove);
+  principVar.addFront(*bestMove);
   return beta;
 }
 
@@ -70,20 +80,8 @@ PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
   auto moves = Board::MoveVec();
-  board.pseudoLegalMoves(moves);
-  PrincipalVariation principVar = PrincipalVariation();
-  bool check = board.isCheck();
-
-  if (check && moves.empty()) {
-    principVar.setMate(true);
-    principVar.setScore(0); // In case of mate, score is number of plies (=
-  } else if (!check && moves.empty()) {
-    principVar.setDraw(true);
-    principVar.setScore(0);
-  } else {
-    Move move = searchForBestMove(board, moves);
-    principVar.addMove(move);
-    principVar.setScore(calculateScore(board));
-  }
+  auto principVar = PrincipalVariation();
+  int finalScore = alphaBetaMax(-100000, 100000, 0, 3, board, principVar);
+  principVar.setScore(finalScore);
   return principVar;
 }
