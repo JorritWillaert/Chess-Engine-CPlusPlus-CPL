@@ -920,6 +920,8 @@ bool Board::isCheck() const {
   return square_under_attack_by_color(king_square, !turn_);
 }
 
+int Board::calculateScore() const { return 0; }
+
 std::ostream &operator<<(std::ostream &os, const Board &board) {
   for (int rank = 7; rank >= 0; rank--) {
     for (int file = 0; file < 8; file++) {

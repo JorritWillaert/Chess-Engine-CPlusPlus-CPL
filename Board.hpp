@@ -67,6 +67,8 @@ public:
 
   bool isCheck() const;
 
+  int calculateScore() const;
+
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
                              // WhiteQueen, WhiteKing, BlackPawn, BlackKnight,

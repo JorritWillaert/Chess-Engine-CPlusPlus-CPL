@@ -14,18 +14,14 @@ Move searchForBestMove(const Board &board, Board::MoveVec moves) {
   return bestMove; // TODO calculate the actual best move
 }
 
-int calculateScore(const Board &board) {
-  return 0; // TODO calculate the actual score
-}
-
 int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                        int maxDepth, const Board &board,
                                        PrincipalVariation &principVar) {
   if (depth == maxDepth) {
-    return calculateScore(board);
+    return board.calculateScore();
   }
   if (board.isCheck()) {
-    return depth;
+    return -50000 - depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
@@ -35,6 +31,9 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     int score =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
+    if (score > 50000 || score < -50000) {
+      return score;
+    }
     if (score >= beta) {
       return beta;
     }
@@ -51,10 +50,10 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
                                        int maxDepth, const Board &board,
                                        PrincipalVariation &principVar) {
   if (depth == maxDepth) {
-    return calculateScore(board);
+    return -board.calculateScore();
   }
   if (board.isCheck()) {
-    return depth;
+    return 50000 + depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
@@ -64,6 +63,9 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     int score =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
+    if (score > 50000 || score < -50000) {
+      return score;
+    }
     if (score <= alpha) {
       return alpha;
     }
@@ -82,6 +84,15 @@ EngineJorritWillaert::pv(const Board &board,
   auto moves = Board::MoveVec();
   auto principVar = PrincipalVariation();
   int finalScore = alphaBetaMax(-100000, 100000, 0, 3, board, principVar);
+  if (finalScore > 50000 || finalScore < -50000) {
+    principVar.setMate(true);
+    if (finalScore > 50000) {
+      principVar.setScore(finalScore - 50000);
+    } else {
+      principVar.setScore(-finalScore - 50000);
+    }
+  }
   principVar.setScore(finalScore);
+  (void)timeInfo;
   return principVar;
 }
