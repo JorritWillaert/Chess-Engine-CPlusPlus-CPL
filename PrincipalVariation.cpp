@@ -5,21 +5,7 @@
 
 PrincipalVariation::PrincipalVariation() : isMate_(false), score_(0) {}
 
-bool PrincipalVariation::isMate() const {
-  return isMate_;
-  // if (!boards_.back().isCheck()) {
-  //   return false;
-  // }
-  // Board::MoveVec moves;
-  // boards_.back().pseudoLegalMoves(moves);
-  // for (const Move &move : moves) {
-  //   Board new_board = boards_.back();
-  //   if (!makeMoveIsCheck(move, new_board)) {
-  //     return false;
-  //   }
-  // }
-  // return true;
-}
+bool PrincipalVariation::isMate() const { return isMate_; }
 
 int PrincipalVariation::score() const { return score_; }
 
