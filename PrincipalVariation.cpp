@@ -37,6 +37,10 @@ void PrincipalVariation::addFront(const Move &move) {
   moves_.insert(moves_.begin(), move);
 }
 
+void PrincipalVariation::setMate(const bool mate) { isMate_ = mate; }
+
+void PrincipalVariation::setScore(const int score) { score_ = score; }
+
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv) {
   os << "Principal Variation:\n";
   for (const Move move : pv) {

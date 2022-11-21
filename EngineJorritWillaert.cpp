@@ -9,11 +9,6 @@ std::string EngineJorritWillaert::author() const { return "Jorrit Willaert"; }
 
 void EngineJorritWillaert::newGame() {}
 
-Move searchForBestMove(const Board &board, Board::MoveVec moves) {
-  Move bestMove = moves[0];
-  return bestMove; // TODO calculate the actual best move
-}
-
 int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                        int maxDepth, const Board &board,
                                        PrincipalVariation &principVar) {
