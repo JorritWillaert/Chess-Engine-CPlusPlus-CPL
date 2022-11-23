@@ -920,6 +920,23 @@ bool Board::isCheck() const {
   return square_under_attack_by_color(king_square, !turn_);
 }
 
+bool Board::isMate() const {
+  if (!isCheck()) {
+    return false;
+  }
+  MoveVec moves;
+  pseudoLegalMoves(moves);
+  std::cout << "Possible moves: " << moves.size() << std::endl;
+  for (const Move &move : moves) {
+    Board copyBoard = *this;
+    copyBoard.makeMove(move);
+    if (!copyBoard.isCheck()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 int Board::calculateScore() const {
   int score = 0;
   score += __builtin_popcount(all_bitmaps_[0]);
