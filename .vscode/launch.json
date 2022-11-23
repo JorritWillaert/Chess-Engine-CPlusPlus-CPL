@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "args": [
+        "--engine",
+        "/home/jorrit/Documents/cplchess-r0652971/build/cplchess",
+        "/home/jorrit/Documents/cplchess-r0652971/Tests/Puzzles/mateIn1_simple.csv"
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}

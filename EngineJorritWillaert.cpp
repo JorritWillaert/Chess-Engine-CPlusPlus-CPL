@@ -1,5 +1,6 @@
 #include "EngineJorritWillaert.hpp"
 #include "PrincipalVariation.hpp"
+#include <iostream>
 
 EngineJorritWillaert::EngineJorritWillaert() {}
 
@@ -20,13 +21,17 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
-  Move *bestMove;
-  for (Move move : moves) {
+  int best_i = 0;
+  for (std::vector<int>::size_type i = 0; i < moves.size(); ++i) {
+    Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
     int score =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
     if (score > 50000 || score < -50000) {
+      Move *moveHeap =
+          new Move(moves[i].from(), moves[i].to(), moves[i].promotion());
+      principVar.addFront(*moveHeap);
       return score;
     }
     if (score >= beta) {
@@ -34,10 +39,13 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     }
     if (score > alpha) {
       alpha = score;
-      bestMove = &move;
+      best_i = i;
     }
   }
-  principVar.addFront(*bestMove);
+  std::cout << "best_i: " << best_i << std::endl;
+  Move *moveHeap = new Move(moves[best_i].from(), moves[best_i].to(),
+                            moves[best_i].promotion());
+  principVar.addFront(*moveHeap);
   return alpha;
 }
 
@@ -52,13 +60,17 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
-  Move *bestMove;
-  for (Move move : moves) {
+  int best_i = 0;
+  for (std::vector<int>::size_type i = 0; i < moves.size(); ++i) {
+    Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
     int score =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard, principVar);
     if (score > 50000 || score < -50000) {
+      Move *moveHeap =
+          new Move(moves[i].from(), moves[i].to(), moves[i].promotion());
+      principVar.addFront(*moveHeap);
       return score;
     }
     if (score <= alpha) {
@@ -66,19 +78,22 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     }
     if (score < beta) {
       beta = score;
-      bestMove = &move;
+      best_i = i;
     }
   }
-  principVar.addFront(*bestMove);
+  std::cout << "best_i: " << best_i << std::endl;
+  Move *moveHeap = new Move(moves[best_i].from(), moves[best_i].to(),
+                            moves[best_i].promotion());
+  principVar.addFront(*moveHeap);
   return beta;
 }
 
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
-  auto moves = Board::MoveVec();
   auto principVar = PrincipalVariation();
-  int finalScore = alphaBetaMax(-100000, 100000, 0, 3, board, principVar);
+  int finalScore = alphaBetaMax(-100000, 100000, 0, 2, board, principVar);
+  std::cout << "Final score" << finalScore << std::endl;
   if (finalScore > 50000 || finalScore < -50000) {
     principVar.setMate(true);
     if (finalScore > 50000) {
@@ -88,6 +103,7 @@ EngineJorritWillaert::pv(const Board &board,
     }
   }
   principVar.setScore(finalScore);
+  std::cout << principVar << std::endl;
   (void)timeInfo;
   return principVar;
 }
