@@ -23,6 +23,8 @@ void PrincipalVariation::addFront(const Move &move) {
   moves_.insert(moves_.begin(), move);
 }
 
+void PrincipalVariation::addBack(const Move &move) { moves_.push_back(move); }
+
 void PrincipalVariation::setMate(const bool mate) { isMate_ = mate; }
 
 void PrincipalVariation::setScore(const int score) { score_ = score; }

@@ -21,6 +21,7 @@ public:
   int score() const;
 
   void addFront(const Move &move);
+  void addBack(const Move &move);
   void setMate(const bool mate);
   void setScore(const int score);
 

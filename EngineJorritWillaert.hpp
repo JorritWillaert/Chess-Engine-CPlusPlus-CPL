@@ -3,6 +3,11 @@
 
 #include "Engine.hpp"
 
+struct ResultWrapper {
+  int score;
+  PrincipalVariation pv;
+};
+
 class EngineJorritWillaert : public Engine {
 public:
   EngineJorritWillaert();
@@ -16,10 +21,10 @@ public:
   pv(const Board &board,
      const TimeInfo::Optional &timeInfo = std::nullopt) override;
 
-  int alphaBetaMax(int alpha, int beta, int depth, int maxDepth,
-                   const Board &board, PrincipalVariation &pv);
-  int alphaBetaMin(int alpha, int beta, int depth, int maxDepth,
-                   const Board &board, PrincipalVariation &pv);
+  ResultWrapper alphaBetaMax(int alpha, int beta, int depth, int maxDepth,
+                             const Board &board);
+  ResultWrapper alphaBetaMin(int alpha, int beta, int depth, int maxDepth,
+                             const Board &board);
 };
 
 #endif
