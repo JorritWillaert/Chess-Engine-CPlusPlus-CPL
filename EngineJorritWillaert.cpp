@@ -17,7 +17,8 @@ int EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     return board.calculateScore();
   }
   if (board.isCheck()) {
-    return -50000 - depth;
+    std::cout << "Detected check max" << std::endl;
+    return +50000 + depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
@@ -56,7 +57,8 @@ int EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     return -board.calculateScore();
   }
   if (board.isCheck()) {
-    return 50000 + depth;
+    std::cout << "Detected check min" << std::endl;
+    return -50000 - depth;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
