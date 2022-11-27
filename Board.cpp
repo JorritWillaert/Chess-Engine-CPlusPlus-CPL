@@ -944,14 +944,22 @@ int Board::calculateScore() const {
   score += __builtin_popcount(all_bitmaps_[2]) * 3;
   score += __builtin_popcount(all_bitmaps_[3]) * 5;
   score += __builtin_popcount(all_bitmaps_[4]) * 9;
-  score += __builtin_popcount(all_bitmaps_[5]) * 100;
+  // score += __builtin_popcount(all_bitmaps_[5]) * 100;
   score -= __builtin_popcount(all_bitmaps_[6]);
   score -= __builtin_popcount(all_bitmaps_[7]) * 3;
   score -= __builtin_popcount(all_bitmaps_[8]) * 3;
   score -= __builtin_popcount(all_bitmaps_[9]) * 5;
   score -= __builtin_popcount(all_bitmaps_[10]) * 9;
-  score -= __builtin_popcount(all_bitmaps_[11]) * 100;
+  // score -= __builtin_popcount(all_bitmaps_[11]) * 100;
   return score;
+}
+
+bool Board::myKingDead() const {
+  uint64_t king = get_king(turn_);
+  if (king == 0) {
+    return true;
+  }
+  return false;
 }
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {

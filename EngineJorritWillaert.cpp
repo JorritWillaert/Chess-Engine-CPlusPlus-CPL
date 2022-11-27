@@ -15,13 +15,12 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                                  const Board &board) {
   ResultWrapper result;
   result.pv = PrincipalVariation();
-  if (depth == maxDepth) {
-    result.score = board.calculateScore();
+  if (board.myKingDead()) {
+    result.score = -50000 - depth;
     return result;
   }
-  if (board.isMate()) {
-    std::cout << "Detected check max" << std::endl;
-    result.score = -50000 - depth;
+  if (depth == maxDepth) {
+    result.score = board.calculateScore();
     return result;
   }
   Board::MoveVec moves;
@@ -66,13 +65,12 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
                                                  const Board &board) {
   ResultWrapper result;
   result.pv = PrincipalVariation();
-  if (depth == maxDepth) {
-    result.score = -board.calculateScore();
+  if (board.myKingDead()) {
+    result.score = 50000 + depth;
     return result;
   }
-  if (board.isMate()) {
-    std::cout << "Detected check min" << std::endl;
-    result.score = 50000 + depth;
+  if (depth == maxDepth) {
+    result.score = -board.calculateScore();
     return result;
   }
   Board::MoveVec moves;
@@ -114,21 +112,13 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
-  auto principVar = PrincipalVariation();
-  auto followingPrincipVar = PrincipalVariation();
-  ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 2, board);
-  principVar = followingPrincipVar;
+  ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 4, board);
+  std::cout << "Final pv" << result.pv << std::endl;
+  PrincipalVariation principVar = result.pv;
+  std::cout << "What this?" << principVar << std::endl;
   std::cout << "Final score" << result.score << std::endl;
   if (result.score > 50000 || result.score < -50000) {
     principVar.setMate(true);
-
-    // TODO add mate in so many steps
-
-    // if (result.scrf > 50000) {
-    //   principVar.setScore(finalScore - 50000);
-    // } else {
-    //   principVar.setScore(-finalScore - 50000);
-    // }
   }
   principVar.setScore(result.score);
   std::cout << principVar << std::endl;

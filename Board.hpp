@@ -67,6 +67,7 @@ public:
 
   bool isCheck() const;
   bool isMate() const;
+  bool myKingDead() const;
 
   int calculateScore() const;
 
