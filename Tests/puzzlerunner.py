@@ -115,7 +115,7 @@ async def _run_puzzle(puzzle, engine_path, total_time):
     moves = puzzle.moves[:]
     assert len(moves) >= 2
     assert len(moves) % 2 == 0
-    print(moves)
+    # print(moves)
 
     board = chess.Board(puzzle.fen)
 
