@@ -115,13 +115,11 @@ EngineJorritWillaert::pv(const Board &board,
   ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 3, board);
   std::cout << "Final pv" << result.pv << std::endl;
   PrincipalVariation principVar = result.pv;
-  std::cout << "What this?" << principVar << std::endl;
-  std::cout << "Final score" << result.score << std::endl;
+  // std::cout << "Final score" << result.score << std::endl;
   if (result.score > 50000 || result.score < -50000) {
     principVar.setMate(true);
   }
   principVar.setScore(result.score);
-  std::cout << principVar << std::endl;
   (void)timeInfo;
   return principVar;
 }

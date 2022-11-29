@@ -134,17 +134,13 @@ async def _run_puzzle(puzzle, engine_path, total_time):
 
     async with create_engine(engine_path) as engine:
         while len(moves) > 0:
-            print("Lets push")
             board.push(moves.pop(0))
-            print("ok?")
 
             try:
                 result = await asyncio.wait_for(
                     engine.play(board, time_limit), timeout=time_left
                 )
-                print("after result")
             except asyncio.TimeoutError:
-                print("Timeout")
                 return PuzzleRunTimeout(puzzle, total_time)
             except Exception as e:
                 print(e)
@@ -223,6 +219,8 @@ def main():
             puzzles = PuzzleDb.from_csv(f)
 
             for puzzle in puzzles:
+                if puzzle.puzzle_id != "2HNcF":
+                    continue
                 print(f"Running puzzle {puzzle.puzzle_id} ... ", end="", flush=True)
                 result = run_puzzle(puzzle, args.engine, args.timeout)
                 total_duration += result.duration_sec

@@ -261,9 +261,10 @@ constexpr int bitscan_backward(uint64_t bitmap) {
 constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
   std::array<uint64_t, 64> masks{};
   for (int i = 0; i < 64; i++) {
-    masks[i] = (all_north_loc_from_pos(i) | all_south_loc_from_pos(i) |
-                all_east_loc_from_pos(i) | all_west_loc_from_pos(i)) &
-               ~(RANK_1 | RANK_8 | FILE_A | FILE_H);
+    masks[i] = (((all_north_loc_from_pos(i) | all_south_loc_from_pos(i)) &
+                 ~(RANK_1 | RANK_8)) |
+                ((all_east_loc_from_pos(i) | all_west_loc_from_pos(i)) &
+                 (~FILE_A | FILE_H)));
   }
   return masks;
 }()};
