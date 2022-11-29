@@ -33,7 +33,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     Board newBoard = board;
     newBoard.makeMove(move);
     ResultWrapper prevResult =
-        alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
+        alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -112,7 +112,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
-  ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 4, board);
+  ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 3, board);
   std::cout << "Final pv" << result.pv << std::endl;
   PrincipalVariation principVar = result.pv;
   std::cout << "What this?" << principVar << std::endl;
