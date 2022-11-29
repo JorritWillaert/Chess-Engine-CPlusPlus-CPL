@@ -285,7 +285,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   moves |= locs;
   if (locs & blockers) {
     moves &= ~(all_east_loc_from_pos(
-        bitscan_forward(all_east_loc_from_pos(square) & blockers)));
+        bitscan_backward(all_east_loc_from_pos(square) & blockers)));
   }
 
   locs = all_south_loc_from_pos(square);
@@ -299,7 +299,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   moves |= locs;
   if (locs & blockers) {
     moves &= ~(all_west_loc_from_pos(
-        bitscan_backward(all_west_loc_from_pos(square) & blockers)));
+        bitscan_forward(all_west_loc_from_pos(square) & blockers)));
   }
 
   return moves;
