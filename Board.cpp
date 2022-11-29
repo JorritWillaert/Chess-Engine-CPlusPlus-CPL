@@ -264,7 +264,7 @@ constexpr std::array<uint64_t, 64> rook_masks{[]() constexpr {
     masks[i] = (((all_north_loc_from_pos(i) | all_south_loc_from_pos(i)) &
                  ~(RANK_1 | RANK_8)) |
                 ((all_east_loc_from_pos(i) | all_west_loc_from_pos(i)) &
-                 (~FILE_A | FILE_H)));
+                 ~(FILE_A | FILE_H)));
   }
   return masks;
 }()};
