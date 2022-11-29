@@ -219,6 +219,8 @@ def main():
             puzzles = PuzzleDb.from_csv(f)
 
             for puzzle in puzzles:
+                if puzzle.puzzle_id != "07FBh":
+                    continue
                 print(f"Running puzzle {puzzle.puzzle_id} ... ", end="", flush=True)
                 result = run_puzzle(puzzle, args.engine, args.timeout)
                 total_duration += result.duration_sec

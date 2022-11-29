@@ -255,6 +255,9 @@ constexpr int bitscan_forward(uint64_t bitmap) {
   return __builtin_ffsll(bitmap) - 1;
 }
 constexpr int bitscan_backward(uint64_t bitmap) {
+  if (bitmap == 0) {
+    return -1;
+  }
   return 63 - __builtin_clzll(bitmap);
 }
 
@@ -302,7 +305,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   return moves;
 }
 constexpr auto all_rook_moves{[]() constexpr {
-  std::array<std::array<uint64_t, 4096>, 64> moves = {};
+  std::array<std::array<uint64_t, 4096>, 64> moves = {{}};
   for (int i = 0; i < 64; i++) {
     for (int blocker_i = 0; blocker_i < (1 << ROOKS_INDEX_BITS[i]);
          blocker_i++) {
@@ -358,7 +361,7 @@ constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   return moves;
 }
 constexpr auto all_bishop_moves{[]() constexpr {
-  std::array<std::array<uint64_t, 512>, 64> moves = {};
+  std::array<std::array<uint64_t, 512>, 64> moves = {{0}};
   for (int i = 0; i < 64; i++) {
     for (int blocker_i = 0; blocker_i < (1 << BISHOPS_INDEX_BITS[i]);
          blocker_i++) {
@@ -952,7 +955,11 @@ int Board::calculateScore() const {
   score -= __builtin_popcount(all_bitmaps_[9]) * 5;
   score -= __builtin_popcount(all_bitmaps_[10]) * 9;
   // score -= __builtin_popcount(all_bitmaps_[11]) * 100;
-  return score;
+  if (turn_ == PieceColor::White) {
+    return score;
+  } else {
+    return -score;
+  }
 }
 
 bool Board::myKingDead() const {
