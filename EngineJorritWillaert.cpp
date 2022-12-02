@@ -113,14 +113,25 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
-  ResultWrapper result = alphaBetaMax(-100000, 100000, 0, 3, board);
-  // std::cout << "Final pv" << result.pv << std::endl;
-  PrincipalVariation principVar = result.pv;
-  // std::cout << "Final score" << result.score << std::endl;
-  if (result.score > 50000 || result.score < -50000) {
-    principVar.setMate(true);
+  PrincipalVariation principVarBest;
+  for (int maxDepth = 3; maxDepth < 7; maxDepth++) {
+    ResultWrapper result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
+    // std::cout << "Final pv" << result.pv << std::endl;
+    // std::cout << "Final score" << result.score << std::endl;
+    if (result.score > 50000) {
+      principVarBest = result.pv;
+      principVarBest.setMate(true);
+      principVarBest.setScore(result.score);
+      break;
+    }
+    if (result.score > principVarBest.score()) {
+      principVarBest = result.pv;
+      if (result.score < -50000) {
+        principVarBest.setMate(true);
+      }
+      principVarBest.setScore(result.score);
+    }
+    (void)timeInfo;
   }
-  principVar.setScore(result.score);
-  (void)timeInfo;
-  return principVar;
+  return principVarBest;
 }
