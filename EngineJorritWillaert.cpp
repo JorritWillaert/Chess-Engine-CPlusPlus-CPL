@@ -26,6 +26,11 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
+  if (moves.empty()) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  }
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
   int best_i = 0;
@@ -79,6 +84,11 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
+  if (moves.empty()) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  }
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
@@ -118,14 +128,22 @@ PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
   PrincipalVariation principVarBest;
+  ResultWrapper result;
   for (int maxDepth = 3; maxDepth < 7; maxDepth++) {
-    ResultWrapper result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
-    // std::cout << "Final pv" << result.pv << std::endl;
-    // std::cout << "Final score" << result.score << std::endl;
+    result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
+    std::cout << result.isMate << std::endl;
+    std::cout << "Depth: " << maxDepth << " Score: " << result.score << std::endl;
+
+    if (result.isStalemate) {
+      principVarBest = PrincipalVariation();
+      principVarBest.setScore(0);
+      continue;
+    }
     if (result.isMate && result.score > 0) {
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score);
+      std::cout << "Mate" << std::endl;
       break;
     }
     if (result.score > principVarBest.score()) {
@@ -136,6 +154,7 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setScore(result.score);
     }
   }
+  std::cout << "Final mate" << principVarBest.isMate() << std::endl;
   (void)timeInfo;
   return principVarBest;
 }
