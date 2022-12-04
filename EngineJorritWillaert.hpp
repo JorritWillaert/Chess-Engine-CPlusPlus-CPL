@@ -5,6 +5,8 @@
 
 struct ResultWrapper {
   int score;
+  bool isMate;
+  bool isStalemate;
   PrincipalVariation pv;
 };
 
