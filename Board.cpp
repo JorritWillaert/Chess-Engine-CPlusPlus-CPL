@@ -920,8 +920,10 @@ void Board::pseudoLegalMovesFrom(const Square &from,
 
 bool Board::isCheck() const {
   uint64_t king = get_king(turn_);
-  Square king_square = Square::fromIndex(pop_lsb(king)).value();
-  return square_under_attack_by_color(king_square, !turn_);
+  int kingIndex = get_LSB(king);
+  Square king_square = Square::fromIndex(kingIndex).value();
+  bool isCheck = square_under_attack_by_color(king_square, !turn_);
+  return isCheck;
 }
 
 bool Board::isMate() const {
