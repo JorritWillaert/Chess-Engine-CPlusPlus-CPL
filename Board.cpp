@@ -561,8 +561,8 @@ void Board::makeMove(const Move &move) {
   setTurn(!turn());
 }
 
-uint64_t Board::get_all_friendly_pieces() const {
-  if (turn_ == PieceColor::White) {
+uint64_t Board::get_all_friendly_pieces(const PieceColor &turn) const {
+  if (turn == PieceColor::White) {
     return all_bitmaps_[0] | all_bitmaps_[1] | all_bitmaps_[2] |
            all_bitmaps_[3] | all_bitmaps_[4] | all_bitmaps_[5];
   } else {
@@ -571,8 +571,8 @@ uint64_t Board::get_all_friendly_pieces() const {
   }
 }
 
-uint64_t Board::get_all_opponent_pieces() const {
-  if (turn_ == PieceColor::White) {
+uint64_t Board::get_all_opponent_pieces(const PieceColor &turn) const {
+  if (turn == PieceColor::White) {
     return all_bitmaps_[6] | all_bitmaps_[7] | all_bitmaps_[8] |
            all_bitmaps_[9] | all_bitmaps_[10] | all_bitmaps_[11];
   } else {
@@ -623,8 +623,8 @@ uint64_t Board::get_king(const PieceColor color) const {
 
 void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                                   const PieceColor color) const {
-  const uint64_t friendly = get_all_friendly_pieces();
-  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t friendly = get_all_friendly_pieces(color);
+  const uint64_t opponent = get_all_opponent_pieces(color);
   const uint64_t all = friendly | opponent;
   uint64_t en_passant_moves = 0;
   uint64_t all_moves;
@@ -676,7 +676,7 @@ void Board::add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
 
 void Board::add_pseudo_knight_moves(const Square &from,
                                     Board::MoveVec &moves) const {
-  const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t friendly = get_all_friendly_pieces(turn_);
   uint64_t all_moves = all_knight_moves[from.index()];
   all_moves &= ~friendly;
   while (all_moves) {
@@ -685,9 +685,9 @@ void Board::add_pseudo_knight_moves(const Square &from,
   }
 }
 
-uint64_t Board::generate_pseudo_bishop_moves(const Square &from) const {
-  const uint64_t friendly = get_all_friendly_pieces();
-  const uint64_t opponent = get_all_opponent_pieces();
+uint64_t Board::generate_pseudo_bishop_moves(const Square &from, const PieceColor &turn) const {
+  const uint64_t friendly = get_all_friendly_pieces(turn);
+  const uint64_t opponent = get_all_opponent_pieces(turn);
   uint64_t blockers = friendly | opponent;
   clear_bit(blockers, from.index());
 
@@ -701,16 +701,16 @@ uint64_t Board::generate_pseudo_bishop_moves(const Square &from) const {
 
 void Board::add_pseudo_bishop_moves(const Square &from,
                                     Board::MoveVec &moves) const {
-  uint64_t all_moves = generate_pseudo_bishop_moves(from);
+  uint64_t all_moves = generate_pseudo_bishop_moves(from, turn_);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
   }
 }
 
-uint64_t Board::generate_pseudo_rook_moves(const Square &from) const {
-  const uint64_t friendly = get_all_friendly_pieces();
-  const uint64_t opponent = get_all_opponent_pieces();
+uint64_t Board::generate_pseudo_rook_moves(const Square &from, const PieceColor &turn) const {
+  const uint64_t friendly = get_all_friendly_pieces(turn);
+  const uint64_t opponent = get_all_opponent_pieces(turn);
   uint64_t blockers = friendly | opponent;
   clear_bit(blockers, from.index());
 
@@ -724,7 +724,7 @@ uint64_t Board::generate_pseudo_rook_moves(const Square &from) const {
 
 void Board::add_pseudo_rook_moves(const Square &from,
                                   Board::MoveVec &moves) const {
-  uint64_t all_moves = generate_pseudo_rook_moves(from);
+  uint64_t all_moves = generate_pseudo_rook_moves(from, turn_);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
@@ -774,7 +774,7 @@ bool Board::check_knight_to_square(const Square &to,
 
 bool Board::check_bishop_and_queen_to_square(const Square &to,
                                              const PieceColor color) const {
-  uint64_t all_moves = generate_pseudo_bishop_moves(to);
+  uint64_t all_moves = generate_pseudo_bishop_moves(to, color);
   all_moves &= get_bishops_and_queens(color);
   if (all_moves) {
     return true;
@@ -784,7 +784,7 @@ bool Board::check_bishop_and_queen_to_square(const Square &to,
 
 bool Board::check_rook_and_queen_to_square(const Square &to,
                                            const PieceColor color) const {
-  uint64_t all_moves = generate_pseudo_rook_moves(to);
+  uint64_t all_moves = generate_pseudo_bishop_moves(to, color);
   all_moves &= get_rooks_and_queens(color);
   if (all_moves) {
     return true;
@@ -815,8 +815,8 @@ bool Board::square_under_attack_by_color(const Square &to,
 }
 
 uint64_t Board::get_castle_moves(const Square &from) const {
-  const uint64_t friendly = get_all_friendly_pieces();
-  const uint64_t opponent = get_all_opponent_pieces();
+  const uint64_t friendly = get_all_friendly_pieces(turn_);
+  const uint64_t opponent = get_all_opponent_pieces(turn_);
   const uint64_t all = friendly | opponent;
   uint64_t castle_moves = 0;
 
@@ -870,7 +870,7 @@ uint64_t Board::get_castle_moves(const Square &from) const {
 
 void Board::add_pseudo_king_moves(const Square &from,
                                   Board::MoveVec &moves) const {
-  const uint64_t friendly = get_all_friendly_pieces();
+  const uint64_t friendly = get_all_friendly_pieces(turn_);
   uint64_t all_moves = all_king_moves[from.index()];
   all_moves &= ~friendly;
 
@@ -918,28 +918,33 @@ void Board::pseudoLegalMovesFrom(const Square &from,
   }
 }
 
-bool Board::isCheck() const {
-  uint64_t king = get_king(turn_);
+bool Board::isCheck(PieceColor turn) const {
+  uint64_t king = get_king(turn);
   int kingIndex = get_LSB(king);
   Square king_square = Square::fromIndex(kingIndex).value();
-  bool isCheck = square_under_attack_by_color(king_square, !turn_);
+  bool isCheck = square_under_attack_by_color(king_square, !turn);
   return isCheck;
 }
 
-bool Board::isMate() const {
-  if (!isCheck()) {
+bool Board::isMate(PieceColor turn) const {
+  if (!isCheck(turn)) {
     return false;
   }
+  std::cout << "Is in check" << std::endl;
+  std::cout << *this << std::endl;
   MoveVec moves;
   pseudoLegalMoves(moves);
-  std::cout << "Possible moves: " << moves.size() << std::endl;
   for (const Move &move : moves) {
     Board copyBoard = *this;
     copyBoard.makeMove(move);
-    if (!copyBoard.isCheck()) {
+    std::cout << "Copy board" << std::endl;
+    std::cout << copyBoard << std::endl;
+    if (!copyBoard.isCheck(turn)) {
+      std::cout << "Is not mate" << std::endl;
       return false;
     }
   }
+  std::cout << "Is mate" << std::endl;
   return true;
 }
 

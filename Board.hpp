@@ -37,14 +37,14 @@ public:
                              const PieceColor color) const;
   void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) const;
-  uint64_t generate_pseudo_bishop_moves(const Square &from) const;
+  uint64_t generate_pseudo_bishop_moves(const Square &from, const PieceColor &turn) const;
   void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) const;
-  uint64_t generate_pseudo_rook_moves(const Square &from) const;
+  uint64_t generate_pseudo_rook_moves(const Square &from, const PieceColor &turn) const;
   void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) const;
 
-  uint64_t get_all_friendly_pieces() const;
-  uint64_t get_all_opponent_pieces() const;
+  uint64_t get_all_friendly_pieces(const PieceColor &turn) const;
+  uint64_t get_all_opponent_pieces(const PieceColor &turn) const;
   uint64_t get_pawns(const PieceColor color) const;
   uint64_t get_knights(const PieceColor color) const;
   uint64_t get_bishops_and_queens(const PieceColor color) const;
@@ -65,8 +65,8 @@ public:
                                       const PieceColor color) const;
   bool check_king_to_square(const Square &square, const PieceColor color) const;
 
-  bool isCheck() const;
-  bool isMate() const;
+  bool isCheck(PieceColor turn) const;
+  bool isMate(PieceColor turn) const;
   bool myKingDead() const;
 
   int calculateScore() const;

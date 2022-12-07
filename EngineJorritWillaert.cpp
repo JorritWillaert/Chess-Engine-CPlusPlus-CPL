@@ -17,8 +17,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  if (board.myKingDead()) {
-    result.score = -50000 -depth;
+  // if (board.myKingDead()) {
+  if (board.isMate(board.turn())) {
+    result.score = -50000 - depth;
     return result;
   }
   if (depth == maxDepth) {
@@ -27,21 +28,27 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
-  // if (moves.empty()) {
-  //   result.score = 0;
-  //   result.isStalemate = true;
-  //   return result;
-  // }
+  if (moves.empty()) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  }
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
   int best_i = 0;
+  bool noStalemateFound = false;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
-    // std::cout << "Move: " << move.from() << move.to() << std::endl;
     Board newBoard = board;
     newBoard.makeMove(move);
+    if (newBoard.isCheck(board.turn())) {
+      continue;
+    }
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
+    if (!prevResult.isStalemate) {
+      noStalemateFound = true;
+    }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -59,13 +66,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  result.score = alpha;
-  result.pv = bestResult.pv;
-
-  Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-                           moves[best_i].promotion());
-  result.pv.addFront(*newMove);
-  return result;
+  if (!noStalemateFound) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  } else {
+    result.score = alpha;
+    result.pv = bestResult.pv;
+    Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                            moves[best_i].promotion());
+    result.pv.addFront(*newMove);
+    return result;
+  }
 }
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
@@ -75,30 +87,40 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  if (board.myKingDead()) {
+  // if (board.myKingDead()) {
+  std::cout << "MIN" << std::endl;
+  if (board.isMate(board.turn())) {
     result.score = 50000 + depth;
     return result;
   }
+  std::cout << "End MIN" << std::endl;
   if (depth == maxDepth) {
     result.score = board.calculateScore();
     return result;
   }
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
-  // if (moves.empty()) {
-  //   result.score = 0;
-  //   result.isStalemate = true;
-  //   return result;
-  // }
+  if (moves.empty()) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  }
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
+  bool noStalemateFound = true;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
+    if (newBoard.isCheck(board.turn())) {
+      continue;
+    }
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
+    if (!prevResult.isStalemate) {
+      noStalemateFound = true;
+    }
     if (prevResult.score < -50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -116,12 +138,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  result.score = beta;
-  result.pv = bestResult.pv;
-  Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-                           moves[best_i].promotion());
-  result.pv.addFront(*newMove);
-  return result;
+  if (!noStalemateFound) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  } else {
+    result.score = beta;
+    result.pv = bestResult.pv;
+    Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                            moves[best_i].promotion());
+    result.pv.addFront(*newMove);
+    return result;
+  }
 }
 
 PrincipalVariation
@@ -129,20 +157,18 @@ EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
   PrincipalVariation principVarBest;
   ResultWrapper result;
-  int depthToSearch = 6;
-  for (int maxDepth = 3; maxDepth < depthToSearch; maxDepth++) {
+  int depthToSearch = 2;
+  for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
     result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
-    // if (result.isStalemate) {
-    //   std::cout << "Stalemate" << std::endl;
-    //   principVarBest = PrincipalVariation();
-    //   principVarBest.setScore(0);
-    //   return principVarBest;
-    // }
+    if (result.isStalemate) {
+      principVarBest = PrincipalVariation();
+      principVarBest.setScore(0);
+      return principVarBest;
+    }
     if (result.score > 50000) {
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
-      std::cout << "Mate" << std::endl;
       break;
     } else if (result.score < -50000) {
       principVarBest = result.pv;
@@ -154,7 +180,6 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setScore(result.score);
     }
   }
-  std::cout << "Final mate" << principVarBest.isMate() << std::endl;
   (void)timeInfo;
   return principVarBest;
 }

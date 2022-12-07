@@ -37,6 +37,7 @@ private:
 
 bool operator==(const Piece& lhs, const Piece& rhs);
 std::ostream& operator<<(std::ostream& os, const Piece& piece);
+std::ostream& operator<<(std::ostream& os, const PieceColor& pieceColor);
 
 // Invert a color (White becomes Black and vice versa)
 PieceColor operator!(PieceColor color);
