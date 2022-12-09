@@ -784,7 +784,7 @@ bool Board::check_bishop_and_queen_to_square(const Square &to,
 
 bool Board::check_rook_and_queen_to_square(const Square &to,
                                            const PieceColor color) const {
-  uint64_t all_moves = generate_pseudo_bishop_moves(to, color);
+  uint64_t all_moves = generate_pseudo_rook_moves(to, color);
   all_moves &= get_rooks_and_queens(color);
   if (all_moves) {
     return true;
@@ -918,7 +918,7 @@ void Board::pseudoLegalMovesFrom(const Square &from,
   }
 }
 
-bool Board::isCheck(PieceColor turn) const {
+bool Board::isCheck(PieceColor turn) {
   uint64_t king = get_king(turn);
   int kingIndex = get_LSB(king);
   Square king_square = Square::fromIndex(kingIndex).value();
@@ -926,7 +926,7 @@ bool Board::isCheck(PieceColor turn) const {
   return isCheck;
 }
 
-bool Board::isMate(PieceColor turn) const {
+bool Board::isMate(PieceColor turn) {
   if (!isCheck(turn)) {
     return false;
   }

@@ -65,8 +65,8 @@ public:
                                       const PieceColor color) const;
   bool check_king_to_square(const Square &square, const PieceColor color) const;
 
-  bool isCheck(PieceColor turn) const;
-  bool isMate(PieceColor turn) const;
+  bool isCheck(PieceColor turn);
+  bool isMate(PieceColor turn);
   bool myKingDead() const;
 
   int calculateScore() const;

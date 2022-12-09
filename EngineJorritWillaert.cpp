@@ -12,7 +12,7 @@ void EngineJorritWillaert::newGame() {}
 
 ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 const Board &board) {
+                                                 Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
@@ -41,9 +41,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
-    if (newBoard.isCheck(board.turn())) {
-      continue;
-    }
+    // if (newBoard.isCheck(board.turn())) {
+    //   continue;
+    // }
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
     if (!prevResult.isStalemate) {
@@ -82,13 +82,13 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 const Board &board) {
+                                                 Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  // if (board.myKingDead()) {
   std::cout << "MIN" << std::endl;
+  // if (board.myKingDead()) {
   if (board.isMate(board.turn())) {
     result.score = 50000 + depth;
     return result;
@@ -113,9 +113,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
-    if (newBoard.isCheck(board.turn())) {
-      continue;
-    }
+    // if (newBoard.isCheck(board.turn())) {
+    //   continue;
+    // }
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
     if (!prevResult.isStalemate) {
@@ -158,8 +158,9 @@ EngineJorritWillaert::pv(const Board &board,
   PrincipalVariation principVarBest;
   ResultWrapper result;
   int depthToSearch = 2;
+  Board nonConstBoard = board;
   for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
-    result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
+    result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
     if (result.isStalemate) {
       principVarBest = PrincipalVariation();
       principVarBest.setScore(0);
