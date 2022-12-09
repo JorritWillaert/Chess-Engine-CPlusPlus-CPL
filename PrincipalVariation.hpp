@@ -15,13 +15,13 @@ class PrincipalVariation {
 public:
   PrincipalVariation();
 
-  using MoveIter = std::vector<Move>::const_iterator;
+  using MoveIter = std::vector<std::unique_ptr<Move>>::const_iterator;
 
   bool isMate() const;
   int score() const;
 
-  void addFront(const Move &move);
-  void addBack(const Move &move);
+  void addFront(std::unique_ptr<Move> move);
+  void addBack(std::unique_ptr<Move> move);
   void setMate(const bool mate);
   void setScore(const int score);
 
@@ -31,7 +31,7 @@ public:
 
 private:
   TimeInfo::Optional timeInfo_;
-  std::vector<Move> moves_;
+  std::vector<std::unique_ptr<Move>> moves_;
   bool isMate_ = false;
   int score_ = 0;
 };

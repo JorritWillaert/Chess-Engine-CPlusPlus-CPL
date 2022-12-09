@@ -19,11 +19,11 @@ PrincipalVariation::MoveIter PrincipalVariation::end() const {
   return moves_.end();
 }
 
-void PrincipalVariation::addFront(const Move &move) {
-  moves_.insert(moves_.begin(), move);
+void PrincipalVariation::addFront(std::unique_ptr<Move> move) {
+  moves_.insert(moves_.begin(), std::move(move));
 }
 
-void PrincipalVariation::addBack(const Move &move) { moves_.push_back(move); }
+void PrincipalVariation::addBack(std::unique_ptr<Move> move) { moves_.push_back(std::move(move)); }
 
 void PrincipalVariation::setMate(const bool mate) { isMate_ = mate; }
 
