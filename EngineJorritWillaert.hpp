@@ -23,9 +23,9 @@ public:
      const TimeInfo::Optional &timeInfo = std::nullopt) override;
 
   ResultWrapper alphaBetaMax(int alpha, int beta, int depth, int maxDepth,
-                             Board &board);
+                             const Board &board);
   ResultWrapper alphaBetaMin(int alpha, int beta, int depth, int maxDepth,
-                             Board &board);
+                             const Board &board);
 };
 
 #endif

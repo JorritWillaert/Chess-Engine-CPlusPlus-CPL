@@ -12,13 +12,13 @@ void EngineJorritWillaert::newGame() {}
 
 ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 Board &board) {
+                                                 const Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  // if (board.myKingDead()) {
-  if (board.isMate(board.turn())) {
+  if (board.myKingDead()) {
+  // if (board.isMate(board.turn())) {
     result.score = -50000 - depth;
     return result;
   }
@@ -82,18 +82,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 Board &board) {
+                                                 const Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  std::cout << "MIN" << std::endl;
-  // if (board.myKingDead()) {
-  if (board.isMate(board.turn())) {
+  // std::cout << "MIN" << std::endl;
+  if (board.myKingDead()) {
+  // if (board.isMate(board.turn())) {
     result.score = 50000 + depth;
     return result;
   }
-  std::cout << "End MIN" << std::endl;
+  // std::cout << "End MIN" << std::endl;
   if (depth == maxDepth) {
     result.score = board.calculateScore();
     return result;
@@ -157,10 +157,9 @@ EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
   PrincipalVariation principVarBest;
   ResultWrapper result;
-  int depthToSearch = 2;
-  Board nonConstBoard = board;
+  int depthToSearch = 6;
   for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
-    result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
+    result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
     if (result.isStalemate) {
       principVarBest = PrincipalVariation();
       principVarBest.setScore(0);
