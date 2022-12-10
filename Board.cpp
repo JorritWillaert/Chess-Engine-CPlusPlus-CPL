@@ -948,20 +948,29 @@ bool Board::isMate(PieceColor turn) {
   return true;
 }
 
-int Board::calculateScore() const {
+int Board::materialScores() const {
   int score = 0;
-  score += __builtin_popcount(all_bitmaps_[0]);
-  score += __builtin_popcount(all_bitmaps_[1]) * 3;
-  score += __builtin_popcount(all_bitmaps_[2]) * 3;
-  score += __builtin_popcount(all_bitmaps_[3]) * 5;
-  score += __builtin_popcount(all_bitmaps_[4]) * 9;
-  // score += __builtin_popcount(all_bitmaps_[5]) * 100;
-  score -= __builtin_popcount(all_bitmaps_[6]);
-  score -= __builtin_popcount(all_bitmaps_[7]) * 3;
-  score -= __builtin_popcount(all_bitmaps_[8]) * 3;
-  score -= __builtin_popcount(all_bitmaps_[9]) * 5;
-  score -= __builtin_popcount(all_bitmaps_[10]) * 9;
-  // score -= __builtin_popcount(all_bitmaps_[11]) * 100;
+  score += __builtin_popcount(all_bitmaps_[0]) * 100;
+  score += __builtin_popcount(all_bitmaps_[1]) * 320;
+  score += __builtin_popcount(all_bitmaps_[2]) * 330;
+  score += __builtin_popcount(all_bitmaps_[3]) * 500;
+  score += __builtin_popcount(all_bitmaps_[4]) * 900;
+  score -= __builtin_popcount(all_bitmaps_[6]) * 100;
+  score -= __builtin_popcount(all_bitmaps_[7]) * 320;
+  score -= __builtin_popcount(all_bitmaps_[8]) * 330;
+  score -= __builtin_popcount(all_bitmaps_[9]) * 500;
+  score -= __builtin_popcount(all_bitmaps_[10]) * 900;
+  return score;
+}
+
+int Board::pieceSquareTablesScores() const {
+
+  return 0;
+}
+
+int Board::calculateScore() const {
+  int score = materialScores();
+  score += pieceSquareTablesScores();
   if (turn_ == PieceColor::White) {
     return score;
   } else {

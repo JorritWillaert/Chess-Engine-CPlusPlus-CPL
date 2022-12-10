@@ -70,6 +70,8 @@ public:
   bool myKingDead() const;
 
   int calculateScore() const;
+  int materialScores() const;
+  int pieceSquareTablesScores() const;
 
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
