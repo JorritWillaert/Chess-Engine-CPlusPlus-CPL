@@ -1042,64 +1042,55 @@ int Board::materialScores() const {
 
 int Board::pieceSquareTablesScores() const {
   int score = 0;
-  for (int i = 0; i < 64; i++) {
-    Square square = Square::fromIndex(i).value();
-    Piece::Optional piece = Board::piece(square);
-    if (piece.has_value()) {
-      Piece p = piece.value();
-      switch (p.type()) {
-      case PieceType::Pawn:
-        if (p.color() == PieceColor::White) {
-          score += PAWN_PIECE_SQUARE_TABLE[i];
-        } else {
-          score -= PAWN_PIECE_SQUARE_TABLE[63 - i];
-        }
-        break;
-      case PieceType::Knight:
-        if (p.color() == PieceColor::White) {
-          score += KNIGHT_PIECE_SQUARE_TABLE[i];
-        } else {
-          score -= KNIGHT_PIECE_SQUARE_TABLE[63 - i];
-        }
-        break;
-      case PieceType::Bishop:
-        if (p.color() == PieceColor::White) {
-          score += BISHOP_PIECE_SQUARE_TABLE[i];
-        } else {
-          score -= BISHOP_PIECE_SQUARE_TABLE[63 - i];
-        }
-        break;
-      case PieceType::Rook:
-        if (p.color() == PieceColor::White) {
-          score += ROOK_PIECE_SQUARE_TABLE[i];
-        } else {
-          score -= ROOK_PIECE_SQUARE_TABLE[63 - i];
-        }
-        break;
-      case PieceType::Queen:
-        if (p.color() == PieceColor::White) {
-          score += QUEEN_PIECE_SQUARE_TABLE[i];
-        } else {
-          score -= QUEEN_PIECE_SQUARE_TABLE[63 - i];
-        }
-        break;
-      case PieceType::King:
-        // Consider endgame if a queen is captured
-        if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
-          if (p.color() == PieceColor::White) {
-            score += KING_END_GAME_PIECE_SQUARE_TABLE[i];
+  for (int i = 0; i < 12; i++) {
+    uint64_t bitmap = all_bitmaps_[i];
+    while (bitmap) {
+      int index = pop_lsb(bitmap);
+      switch(i) {
+        case 0:
+          score += PAWN_PIECE_SQUARE_TABLE[index];
+          break;
+        case 1:
+          score += KNIGHT_PIECE_SQUARE_TABLE[index];
+          break;
+        case 2:
+          score += BISHOP_PIECE_SQUARE_TABLE[index];
+          break;
+        case 3:       
+          score += ROOK_PIECE_SQUARE_TABLE[index];
+          break; 
+        case 4:      
+          score += QUEEN_PIECE_SQUARE_TABLE[index];
+          break;  
+        case 6:
+          score -= PAWN_PIECE_SQUARE_TABLE[63 - index];
+          break;
+        case 7:
+          score -= KNIGHT_PIECE_SQUARE_TABLE[63 - index];
+          break;
+        case 8: 
+          score -= BISHOP_PIECE_SQUARE_TABLE[63 - index];
+          break;  
+        case 9:
+          score -= ROOK_PIECE_SQUARE_TABLE[63 - index];
+          break;
+        case 10:
+          score -= QUEEN_PIECE_SQUARE_TABLE[63 - index];
+          break;
+        case 5:
+          if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
+            score += KING_END_GAME_PIECE_SQUARE_TABLE[index];
           } else {
-            score -= KING_END_GAME_PIECE_SQUARE_TABLE[63 - i];
+            score += KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[index];
           }
           break;
-        } else {
-          if (p.color() == PieceColor::White) {
-            score += KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[i];
+        case 11:
+          if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
+            score -= KING_END_GAME_PIECE_SQUARE_TABLE[index];
           } else {
-            score -= KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[63 - i];
+            score -= KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[index];
           }
           break;
-        }
       }
     }
   }
