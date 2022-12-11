@@ -1086,9 +1086,9 @@ int Board::pieceSquareTablesScores() const {
           break;
         case 11:
           if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
-            score -= KING_END_GAME_PIECE_SQUARE_TABLE[index];
+            score -= KING_END_GAME_PIECE_SQUARE_TABLE[63 - index];
           } else {
-            score -= KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[index];
+             score -= KING_END_GAME_PIECE_SQUARE_TABLE[63 - index];
           }
           break;
       }

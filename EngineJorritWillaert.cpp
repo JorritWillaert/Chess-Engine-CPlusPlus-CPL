@@ -161,6 +161,7 @@ EngineJorritWillaert::pv(const Board &board,
   for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
     result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
     if (result.isStalemate) {
+      std::cout << "Stalemate" << std::endl;
       principVarBest = PrincipalVariation();
       principVarBest.setScore(0);
       return principVarBest;
@@ -178,6 +179,7 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
+      std::cout << "Score: " << result.score << std::endl;
     }
   }
   (void)timeInfo;
