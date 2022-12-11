@@ -36,7 +36,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
   int best_i = 0;
-  bool noStalemateFound = false;
+  // bool noStalemateFound = false;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
@@ -46,9 +46,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     // }
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
-    if (!prevResult.isStalemate) {
-      noStalemateFound = true;
-    }
+    // if (!prevResult.isStalemate) {
+    //   noStalemateFound = true;
+    // }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -58,6 +58,10 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     }
     if (prevResult.score >= beta) {
       result.score = beta;
+      result.pv = bestResult.pv;
+      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                              moves[best_i].promotion());
+      result.pv.addFront(*newMove);
       return result;
     }
     if (prevResult.score > alpha) {
@@ -66,18 +70,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  if (!noStalemateFound) {
-    result.score = 0;
-    result.isStalemate = true;
-    return result;
-  } else {
+  // if (!noStalemateFound) {
+  //   result.score = 0;
+  //   result.isStalemate = true;
+  //   return result;
+  // } else {
     result.score = alpha;
     result.pv = bestResult.pv;
     Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
     result.pv.addFront(*newMove);
     return result;
-  }
+  // }
 }
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
@@ -108,7 +112,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
-  bool noStalemateFound = true;
+  // bool noStalemateFound = true;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
@@ -118,9 +122,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     // }
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
-    if (!prevResult.isStalemate) {
-      noStalemateFound = true;
-    }
+    // if (!prevResult.isStalemate) {
+    //   noStalemateFound = true;
+    // }
     if (prevResult.score < -50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -130,6 +134,10 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     }
     if (prevResult.score <= alpha) {
       result.score = alpha;
+      result.pv = bestResult.pv;
+      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                              moves[best_i].promotion());
+      result.pv.addFront(*newMove);
       return result;
     }
     if (prevResult.score < beta) {
@@ -138,18 +146,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  if (!noStalemateFound) {
-    result.score = 0;
-    result.isStalemate = true;
-    return result;
-  } else {
+  // if (!noStalemateFound) {
+  //   result.score = 0;
+  //   result.isStalemate = true;
+  //   return result;
+  // } else {
     result.score = beta;
     result.pv = bestResult.pv;
     Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
     result.pv.addFront(*newMove);
     return result;
-  }
+  // }
 }
 
 PrincipalVariation
@@ -159,7 +167,9 @@ EngineJorritWillaert::pv(const Board &board,
   ResultWrapper result;
   int depthToSearch = 6;
   for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
+    std::cout << "Begin score" << board.calculateScore();
     result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
+    std::cout << "Score" << result.score << std::endl;
     if (result.isStalemate) {
       std::cout << "Stalemate" << std::endl;
       principVarBest = PrincipalVariation();
@@ -167,11 +177,13 @@ EngineJorritWillaert::pv(const Board &board,
       return principVarBest;
     }
     if (result.score > 50000) {
+      std::cout << "Positive" << std::endl;
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
       break;
     } else if (result.score < -50000) {
+      std::cout << "Negative" << std::endl;
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
@@ -179,8 +191,8 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
-      std::cout << "Score: " << result.score << std::endl;
     }
+    std::cout << "Length: " << result.pv.length() << std::endl;
   }
   (void)timeInfo;
   return principVarBest;

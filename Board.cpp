@@ -1027,16 +1027,20 @@ bool Board::isMate(PieceColor turn) {
 
 int Board::materialScores() const {
   int score = 0;
-  score += __builtin_popcount(all_bitmaps_[0]) * 100;
-  score += __builtin_popcount(all_bitmaps_[1]) * 320;
-  score += __builtin_popcount(all_bitmaps_[2]) * 330;
-  score += __builtin_popcount(all_bitmaps_[3]) * 500;
-  score += __builtin_popcount(all_bitmaps_[4]) * 900;
-  score -= __builtin_popcount(all_bitmaps_[6]) * 100;
-  score -= __builtin_popcount(all_bitmaps_[7]) * 320;
-  score -= __builtin_popcount(all_bitmaps_[8]) * 330;
-  score -= __builtin_popcount(all_bitmaps_[9]) * 500;
-  score -= __builtin_popcount(all_bitmaps_[10]) * 900;
+  std::cout << "Board:" << std::endl;
+  std::cout << *this << std::endl;
+  score += __builtin_popcountll(all_bitmaps_[0]) * 100;
+  std::cout << "Pawns: " << all_bitmaps_[0] << std::endl;
+  std::cout << "Number of pawns: " << __builtin_popcountll(all_bitmaps_[0]) << std::endl;
+  score += __builtin_popcountll(all_bitmaps_[1]) * 320;
+  score += __builtin_popcountll(all_bitmaps_[2]) * 330;
+  score += __builtin_popcountll(all_bitmaps_[3]) * 500;
+  score += __builtin_popcountll(all_bitmaps_[4]) * 900;
+  score -= __builtin_popcountll(all_bitmaps_[6]) * 100;
+  score -= __builtin_popcountll(all_bitmaps_[7]) * 320;
+  score -= __builtin_popcountll(all_bitmaps_[8]) * 330;
+  score -= __builtin_popcountll(all_bitmaps_[9]) * 500;
+  score -= __builtin_popcountll(all_bitmaps_[10]) * 900;
   return score;
 }
 
@@ -1078,14 +1082,14 @@ int Board::pieceSquareTablesScores() const {
           score -= QUEEN_PIECE_SQUARE_TABLE[63 - index];
           break;
         case 5:
-          if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
+          if (__builtin_popcountll(all_bitmaps_[4]) == 0 || __builtin_popcountll(all_bitmaps_[10]) == 0) {
             score += KING_END_GAME_PIECE_SQUARE_TABLE[index];
           } else {
             score += KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[index];
           }
           break;
         case 11:
-          if (__builtin_popcount(all_bitmaps_[4]) == 0 || __builtin_popcount(all_bitmaps_[10]) == 0) {
+          if (__builtin_popcountll(all_bitmaps_[4]) == 0 || __builtin_popcountll(all_bitmaps_[10]) == 0) {
             score -= KING_END_GAME_PIECE_SQUARE_TABLE[63 - index];
           } else {
              score -= KING_END_GAME_PIECE_SQUARE_TABLE[63 - index];
@@ -1099,7 +1103,9 @@ int Board::pieceSquareTablesScores() const {
 
 int Board::calculateScore() const {
   int score = materialScores();
+  std::cout << "Score here" << score << std::endl;
   score += pieceSquareTablesScores();
+  std::cout << "Score now" << score << std::endl;
   if (turn_ == PieceColor::White) {
     return score;
   } else {
