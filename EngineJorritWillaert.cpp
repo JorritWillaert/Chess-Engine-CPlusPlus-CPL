@@ -12,7 +12,7 @@ void EngineJorritWillaert::newGame() {}
 
 ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 const Board &board) {
+                                                 Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
@@ -49,6 +49,12 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     // if (!prevResult.isStalemate) {
     //   noStalemateFound = true;
     // }
+    if (depth == 0 && move.from() == Square::D4 && move.to() == Square::F3) {
+      std::cout << "Score: " << prevResult.score << std::endl;
+    }
+    if (depth == 0 && move.from() == Square::D4 && move.to() == Square::C2) {
+      std::cout << "Other score: " << prevResult.score << std::endl;
+    }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -56,14 +62,14 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       result.pv.addFront(*newMove);
       return result;
     }
-    if (prevResult.score >= beta) {
-      result.score = beta;
-      result.pv = bestResult.pv;
-      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-                              moves[best_i].promotion());
-      result.pv.addFront(*newMove);
-      return result;
-    }
+    // if (prevResult.score >= beta) {
+    //   result.score = beta;
+    //   result.pv = bestResult.pv;
+    //   Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+    //                           moves[best_i].promotion());
+    //   result.pv.addFront(*newMove);
+    //   return result;
+    // }
     if (prevResult.score > alpha) {
       alpha = prevResult.score;
       bestResult = prevResult;
@@ -86,7 +92,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
                                                  int maxDepth,
-                                                 const Board &board) {
+                                                 Board &board) {
   ResultWrapper result;
   result.score = 0;
   result.isStalemate = false;
@@ -132,14 +138,14 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       result.pv.addFront(*newMove);
       return result;
     }
-    if (prevResult.score <= alpha) {
-      result.score = alpha;
-      result.pv = bestResult.pv;
-      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-                              moves[best_i].promotion());
-      result.pv.addFront(*newMove);
-      return result;
-    }
+    // if (prevResult.score <= alpha) {
+    //   result.score = alpha;
+    //   result.pv = bestResult.pv;
+    //   Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+    //                           moves[best_i].promotion());
+    //   result.pv.addFront(*newMove);
+    //   return result;
+    // }
     if (prevResult.score < beta) {
       beta = prevResult.score;
       bestResult = prevResult;
@@ -163,31 +169,30 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
 PrincipalVariation
 EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
+  Board nonConstBoard = board;
+  nonConstBoard.setMaximizerColor(board.turn());
   PrincipalVariation principVarBest;
   ResultWrapper result;
-  int depthToSearch = 6;
-  for (int maxDepth = 1; maxDepth < depthToSearch; maxDepth++) {
-    std::cout << "Begin score" << board.calculateScore();
-    result = alphaBetaMax(-100000, 100000, 0, maxDepth, board);
-    std::cout << "Score" << result.score << std::endl;
+  int depthToSearch = 5;
+  for (int maxDepth = 1; maxDepth <= depthToSearch; maxDepth++) {
+    result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
     if (result.isStalemate) {
-      std::cout << "Stalemate" << std::endl;
       principVarBest = PrincipalVariation();
       principVarBest.setScore(0);
       return principVarBest;
     }
     if (result.score > 50000) {
-      std::cout << "Positive" << std::endl;
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
       break;
     } else if (result.score < -50000) {
-      std::cout << "Negative" << std::endl;
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
     } else if (!(result.score > 500000) && !(result.score < -50000) && (result.score > principVarBest.score())) {
+      std::cout << "New score: " << result.score << std::endl;
+      std::cout << "New pv: " << result.pv << std::endl;
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);

@@ -73,6 +73,8 @@ public:
   int materialScores() const;
   int pieceSquareTablesScores() const;
 
+  void setMaximizerColor(PieceColor color);
+
 private:
   uint64_t all_bitmaps_[12]; // WhitePawn, WhiteKnight, WhiteBishop, WhiteRook,
                              // WhiteQueen, WhiteKing, BlackPawn, BlackKnight,
@@ -80,6 +82,7 @@ private:
   PieceColor turn_;
   CastlingRights castling_rights_;
   std::optional<Square> en_passant_square_;
+  PieceColor maximizerColor_;
 };
 
 std::ostream &operator<<(std::ostream &os, const Board &board);

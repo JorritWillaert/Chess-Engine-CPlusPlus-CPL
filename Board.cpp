@@ -1027,11 +1027,7 @@ bool Board::isMate(PieceColor turn) {
 
 int Board::materialScores() const {
   int score = 0;
-  std::cout << "Board:" << std::endl;
-  std::cout << *this << std::endl;
   score += __builtin_popcountll(all_bitmaps_[0]) * 100;
-  std::cout << "Pawns: " << all_bitmaps_[0] << std::endl;
-  std::cout << "Number of pawns: " << __builtin_popcountll(all_bitmaps_[0]) << std::endl;
   score += __builtin_popcountll(all_bitmaps_[1]) * 320;
   score += __builtin_popcountll(all_bitmaps_[2]) * 330;
   score += __builtin_popcountll(all_bitmaps_[3]) * 500;
@@ -1103,10 +1099,8 @@ int Board::pieceSquareTablesScores() const {
 
 int Board::calculateScore() const {
   int score = materialScores();
-  std::cout << "Score here" << score << std::endl;
   score += pieceSquareTablesScores();
-  std::cout << "Score now" << score << std::endl;
-  if (turn_ == PieceColor::White) {
+  if (turn_ == maximizerColor_) {
     return score;
   } else {
     return -score;
@@ -1119,6 +1113,10 @@ bool Board::myKingDead() const {
     return true;
   }
   return false;
+}
+
+void Board::setMaximizerColor(PieceColor color) {
+  maximizerColor_ = color;
 }
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {
