@@ -1007,21 +1007,15 @@ bool Board::isMate(PieceColor turn) {
   if (!isCheck(turn)) {
     return false;
   }
-  std::cout << "Is in check" << std::endl;
-  std::cout << *this << std::endl;
   MoveVec moves;
   pseudoLegalMoves(moves);
   for (const Move &move : moves) {
     Board copyBoard = *this;
     copyBoard.makeMove(move);
-    std::cout << "Copy board" << std::endl;
-    std::cout << copyBoard << std::endl;
     if (!copyBoard.isCheck(turn)) {
-      std::cout << "Is not mate" << std::endl;
       return false;
     }
   }
-  std::cout << "Is mate" << std::endl;
   return true;
 }
 
