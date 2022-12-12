@@ -49,12 +49,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     // if (!prevResult.isStalemate) {
     //   noStalemateFound = true;
     // }
-    if (depth == 0 && move.from() == Square::D4 && move.to() == Square::F3) {
-      std::cout << "Score: " << prevResult.score << std::endl;
-    }
-    if (depth == 0 && move.from() == Square::D4 && move.to() == Square::C2) {
-      std::cout << "Other score: " << prevResult.score << std::endl;
-    }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -62,14 +56,14 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       result.pv.addFront(*newMove);
       return result;
     }
-    // if (prevResult.score >= beta) {
-    //   result.score = beta;
-    //   result.pv = bestResult.pv;
-    //   Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-    //                           moves[best_i].promotion());
-    //   result.pv.addFront(*newMove);
-    //   return result;
-    // }
+    if (prevResult.score >= beta) {
+      result.score = beta;
+      result.pv = bestResult.pv;
+      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                              moves[best_i].promotion());
+      result.pv.addFront(*newMove);
+      return result;
+    }
     if (prevResult.score > alpha) {
       alpha = prevResult.score;
       bestResult = prevResult;
@@ -138,14 +132,14 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       result.pv.addFront(*newMove);
       return result;
     }
-    // if (prevResult.score <= alpha) {
-    //   result.score = alpha;
-    //   result.pv = bestResult.pv;
-    //   Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
-    //                           moves[best_i].promotion());
-    //   result.pv.addFront(*newMove);
-    //   return result;
-    // }
+    if (prevResult.score <= alpha) {
+      result.score = alpha;
+      result.pv = bestResult.pv;
+      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+                              moves[best_i].promotion());
+      result.pv.addFront(*newMove);
+      return result;
+    }
     if (prevResult.score < beta) {
       beta = prevResult.score;
       bestResult = prevResult;
@@ -190,14 +184,11 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
-    } else if (!(result.score > 500000) && !(result.score < -50000) && (result.score > principVarBest.score())) {
-      std::cout << "New score: " << result.score << std::endl;
-      std::cout << "New pv: " << result.pv << std::endl;
+    } else if (!(result.score > 500000) && !(result.score < -50000)) {
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
     }
-    std::cout << "Length: " << result.pv.length() << std::endl;
   }
   (void)timeInfo;
   return principVarBest;
