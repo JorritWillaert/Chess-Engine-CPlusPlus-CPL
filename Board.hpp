@@ -82,7 +82,7 @@ private:
   PieceColor turn_;
   CastlingRights castling_rights_;
   std::optional<Square> en_passant_square_;
-  PieceColor maximizerColor_;
+  PieceColor maximize_color_;
 };
 
 std::ostream &operator<<(std::ostream &os, const Board &board);

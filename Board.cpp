@@ -122,17 +122,20 @@ constexpr uint64_t BISHOPS_MAGICS[64] = {
     0x40102000a0a60140ULL,
 };
 
+// The number of index bits required for the rook at certain positions
 constexpr int ROOKS_INDEX_BITS[64] = {
     12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12};
 
+// The number of index bits required for the bishop at certain positions
 constexpr int BISHOPS_INDEX_BITS[64] = {
     6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
     5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
     7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6};
 
+// The following are piece square tables for the evaluation function
 const int PAWN_PIECE_SQUARE_TABLE[64] = {
   0,  0,  0,  0,  0,  0,  0,  0,
   50, 50, 50, 50, 50, 50, 50, 50,
@@ -286,7 +289,7 @@ constexpr uint64_t all_north_west_loc_from_pos(int pos) {
   return locations;
 }
 
-constexpr uint64_t getBlockersFromIndex(int i, uint64_t mask) {
+constexpr uint64_t get_blockers(int i, uint64_t mask) {
   uint64_t blockers = 0;
   int bits = __builtin_popcountll(mask);
   for (int j = 0; j < bits; j++) {
@@ -354,6 +357,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   uint64_t locs = all_north_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares north of the blocker
     moves &= ~(all_north_loc_from_pos(
         bitscan_forward(all_north_loc_from_pos(square) & blockers)));
   }
@@ -361,6 +365,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   locs = all_east_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares east of the blocker
     moves &= ~(all_east_loc_from_pos(
         bitscan_backward(all_east_loc_from_pos(square) & blockers)));
   }
@@ -368,6 +373,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   locs = all_south_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares south of the blocker
     moves &= ~(all_south_loc_from_pos(
         bitscan_backward(all_south_loc_from_pos(square) & blockers)));
   }
@@ -375,6 +381,7 @@ constexpr uint64_t rook_moves(int square, uint64_t blockers) {
   locs = all_west_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares west of the blocker
     moves &= ~(all_west_loc_from_pos(
         bitscan_forward(all_west_loc_from_pos(square) & blockers)));
   }
@@ -386,7 +393,7 @@ constexpr auto all_rook_moves{[]() constexpr {
   for (int i = 0; i < 64; i++) {
     for (int blocker_i = 0; blocker_i < (1 << ROOKS_INDEX_BITS[i]);
          blocker_i++) {
-      uint64_t blockers = getBlockersFromIndex(blocker_i, rook_masks[i]);
+      uint64_t blockers = get_blockers(blocker_i, rook_masks[i]);
       moves[i][(blockers * ROOKS_MAGICS[i]) >> (64 - ROOKS_INDEX_BITS[i])] =
           rook_moves(i, blockers);
     }
@@ -410,6 +417,7 @@ constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   uint64_t locs = all_north_east_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares north east of the blocker
     moves &= ~(all_north_east_loc_from_pos(
         bitscan_forward(all_north_east_loc_from_pos(square) & blockers)));
   }
@@ -417,6 +425,7 @@ constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   locs = all_south_east_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares south east of the blocker
     moves &= ~(all_south_east_loc_from_pos(
         bitscan_backward(all_south_east_loc_from_pos(square) & blockers)));
   }
@@ -424,6 +433,7 @@ constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   locs = all_south_west_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares south west of the blocker
     moves &= ~(all_south_west_loc_from_pos(
         bitscan_backward(all_south_west_loc_from_pos(square) & blockers)));
   }
@@ -431,6 +441,7 @@ constexpr uint64_t bishop_moves(int square, uint64_t blockers) {
   locs = all_north_west_loc_from_pos(square);
   moves |= locs;
   if (locs & blockers) {
+    // Don't consider all the squares north west of the blocker
     moves &= ~(all_north_west_loc_from_pos(
         bitscan_forward(all_north_west_loc_from_pos(square) & blockers)));
   }
@@ -442,7 +453,7 @@ constexpr auto all_bishop_moves{[]() constexpr {
   for (int i = 0; i < 64; i++) {
     for (int blocker_i = 0; blocker_i < (1 << BISHOPS_INDEX_BITS[i]);
          blocker_i++) {
-      uint64_t blockers = getBlockersFromIndex(blocker_i, bishop_masks[i]);
+      uint64_t blockers = get_blockers(blocker_i, bishop_masks[i]);
       moves[i][(blockers * BISHOPS_MAGICS[i]) >> (64 - BISHOPS_INDEX_BITS[i])] =
           bishop_moves(i, blockers);
     }
@@ -451,19 +462,6 @@ constexpr auto all_bishop_moves{[]() constexpr {
 }()};
 
 Board::Board() {
-  // all_bitmaps_[0] = RANK_2;                 // White pawns
-  // all_bitmaps_[1] = 0x0000000000000042ULL;  // White knights
-  // all_bitmaps_[2] = 0x0000000000000024ULL;  // White bishops
-  // all_bitmaps_[3] = 0x0000000000000081ULL;  // White rooks
-  // all_bitmaps_[4] = 0x0000000000000010ULL;  // White queen
-  // all_bitmaps_[5] = 0x0000000000000008ULL;  // White king
-  // all_bitmaps_[6] = RANK_7;                 // Black pawns
-  // all_bitmaps_[7] = 0x4200000000000000ULL;  // Black knights
-  // all_bitmaps_[8] = 0x2400000000000000ULL;  // Black bishops
-  // all_bitmaps_[9] = 0x8100000000000000ULL;  // Black rooks
-  // all_bitmaps_[10] = 0x1000000000000000ULL; // Black queen
-  // all_bitmaps_[11] = 0x0800000000000000ULL; // Black king
-
   all_bitmaps_[0] = 0;  // White pawns
   all_bitmaps_[1] = 0;  // White knights
   all_bitmaps_[2] = 0;  // White bishops
@@ -483,6 +481,8 @@ Board::Board() {
   castling_rights_ |= CastlingRights::BlackKingside;
   castling_rights_ |= CastlingRights::BlackQueenside;
   en_passant_square_ = std::nullopt;
+  turn_ = PieceColor::White;
+  maximize_color_ = PieceColor::White;
 }
 
 void Board::setPiece(const Square &square, const Piece::Optional &piece) {
@@ -515,9 +515,7 @@ Piece::Optional Board::piece(const Square &square) const {
   for (int i = 0; i < 12; i++) {
     if (get_bit(all_bitmaps_[i], square.index())) {
       int piece_color = i / 6; // 0 = white, 1 = black
-      int piece_type =
-          i %
-          6; // 0 = Pawn, 1 = Knight, 2 = Bishop, 3 = Rook, 4 = Queen, 5 = King
+      int piece_type = i % 6; // 0 = Pawn, 1 = Knight, 2 = Bishop, 3 = Rook, 4 = Queen, 5 = King
       return Piece(static_cast<PieceColor>(piece_color),
                    static_cast<PieceType>(piece_type));
     }
@@ -1110,7 +1108,7 @@ bool Board::myKingDead() const {
 }
 
 void Board::setMaximizerColor(PieceColor color) {
-  maximizerColor_ = color;
+  maximize_color_ = color;
 }
 
 std::ostream &operator<<(std::ostream &os, const Board &board) {
