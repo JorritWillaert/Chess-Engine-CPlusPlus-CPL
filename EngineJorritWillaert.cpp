@@ -167,7 +167,7 @@ EngineJorritWillaert::pv(const Board &board,
   nonConstBoard.setMaximizerColor(board.turn());
   PrincipalVariation principVarBest;
   ResultWrapper result;
-  int depthToSearch = 5;
+  int depthToSearch = 7;
   for (int maxDepth = 1; maxDepth <= depthToSearch; maxDepth+=2) {
     result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
     if (result.isStalemate) {
