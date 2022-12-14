@@ -62,6 +62,10 @@ Square Move::from() const { return from_; }
 
 Square Move::to() const { return to_; }
 
+int Move::tempValue() const { return tempValue_; }
+
+void Move::setTempValue(int value) { tempValue_ = value; }
+
 std::optional<PieceType> Move::promotion() const { return promotion_; }
 
 std::ostream &operator<<(std::ostream &os, const Move &move) {

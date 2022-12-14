@@ -21,10 +21,14 @@ public:
   Square to() const;
   std::optional<PieceType> promotion() const;
 
+  int tempValue() const;
+  void setTempValue(int value);
+
 private:
   Square from_;
   Square to_;
   std::optional<PieceType> promotion_;
+  int tempValue_;
 };
 
 std::ostream &operator<<(std::ostream &os, const Move &move);

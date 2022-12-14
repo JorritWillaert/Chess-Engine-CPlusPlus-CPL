@@ -1,6 +1,7 @@
 #include "EngineJorritWillaert.hpp"
 #include "PrincipalVariation.hpp"
 #include <iostream>
+#include <algorithm>
 
 EngineJorritWillaert::EngineJorritWillaert() {}
 
@@ -9,6 +10,19 @@ std::string EngineJorritWillaert::version() const { return "1.0"; }
 std::string EngineJorritWillaert::author() const { return "Jorrit Willaert"; }
 
 void EngineJorritWillaert::newGame() {}
+
+void orderMoves(Board::MoveVec &moves, Board &board) {
+  for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
+    Move move = moves[i];
+    Board copy = board;
+    copy.makeMove(move);
+    moves[i].setTempValue(copy.calculateScore());
+  }
+  std::sort(moves.begin(), moves.end(),
+            [](const Move &a, const Move &b) -> bool {
+              return a.tempValue() > b.tempValue();
+            });
+}
 
 ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
                                                  int maxDepth,
@@ -33,6 +47,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     result.isStalemate = true;
     return result;
   }
+  orderMoves(moves, board);
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
   int best_i = 0;
@@ -109,6 +124,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     result.isStalemate = true;
     return result;
   }
+  orderMoves(moves, board);
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
@@ -167,8 +183,8 @@ EngineJorritWillaert::pv(const Board &board,
   nonConstBoard.setMaximizerColor(board.turn());
   PrincipalVariation principVarBest;
   ResultWrapper result;
-  int depthToSearch = 7;
-  for (int maxDepth = 1; maxDepth <= depthToSearch; maxDepth+=2) {
+  int depthToSearch = 5;
+  for (int maxDepth = 1; maxDepth <= depthToSearch; maxDepth++) {
     result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
     if (result.isStalemate) {
       principVarBest = PrincipalVariation();
@@ -191,6 +207,8 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setScore(result.score);
     }
   }
+  // std::cout << "Score: " << principVarBest.score() << std::endl;
+  // std::cout << principVarBest << std::endl;
   (void)timeInfo;
   return principVarBest;
 }
