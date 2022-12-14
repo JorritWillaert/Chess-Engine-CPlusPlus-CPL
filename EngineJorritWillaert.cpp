@@ -184,6 +184,7 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
+      return principVarBest;
     } else if (!(result.score > 500000) && !(result.score < -50000)) {
       principVarBest = result.pv;
       principVarBest.setMate(false);
