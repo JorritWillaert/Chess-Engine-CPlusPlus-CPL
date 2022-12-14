@@ -37,9 +37,9 @@ public:
                              const PieceColor color) const;
   void add_pseudo_knight_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_bishop_moves(const Square &from, Board::MoveVec &moves) const;
-  uint64_t generate_pseudo_bishop_moves(const Square &from, const PieceColor &turn) const;
+  uint64_t generate_pseudo_bishop_moves(const Square &from) const;
   void add_pseudo_rook_moves(const Square &from, Board::MoveVec &moves) const;
-  uint64_t generate_pseudo_rook_moves(const Square &from, const PieceColor &turn) const;
+  uint64_t generate_pseudo_rook_moves(const Square &from) const;
   void add_pseudo_queen_moves(const Square &from, Board::MoveVec &moves) const;
   void add_pseudo_king_moves(const Square &from, Board::MoveVec &moves) const;
 
@@ -69,7 +69,7 @@ public:
   bool isMate(PieceColor turn);
   bool myKingDead() const;
 
-  int calculateScore() const;
+  int calculateScore() ;
   int materialScores() const;
   int pieceSquareTablesScores() const;
 

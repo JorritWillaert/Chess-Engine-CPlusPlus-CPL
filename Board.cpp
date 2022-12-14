@@ -760,9 +760,9 @@ void Board::add_pseudo_knight_moves(const Square &from,
   }
 }
 
-uint64_t Board::generate_pseudo_bishop_moves(const Square &from, const PieceColor &turn) const {
-  const uint64_t friendly = get_all_friendly_pieces(turn);
-  const uint64_t opponent = get_all_opponent_pieces(turn);
+uint64_t Board::generate_pseudo_bishop_moves(const Square &from) const {
+  const uint64_t friendly = get_all_friendly_pieces(turn_);
+  const uint64_t opponent = get_all_opponent_pieces(turn_);
   uint64_t blockers = friendly | opponent;
   clear_bit(blockers, from.index());
 
@@ -776,16 +776,16 @@ uint64_t Board::generate_pseudo_bishop_moves(const Square &from, const PieceColo
 
 void Board::add_pseudo_bishop_moves(const Square &from,
                                     Board::MoveVec &moves) const {
-  uint64_t all_moves = generate_pseudo_bishop_moves(from, turn_);
+  uint64_t all_moves = generate_pseudo_bishop_moves(from);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
   }
 }
 
-uint64_t Board::generate_pseudo_rook_moves(const Square &from, const PieceColor &turn) const {
-  const uint64_t friendly = get_all_friendly_pieces(turn);
-  const uint64_t opponent = get_all_opponent_pieces(turn);
+uint64_t Board::generate_pseudo_rook_moves(const Square &from) const {
+  const uint64_t friendly = get_all_friendly_pieces(turn_);
+  const uint64_t opponent = get_all_opponent_pieces(turn_);
   uint64_t blockers = friendly | opponent;
   clear_bit(blockers, from.index());
 
@@ -799,7 +799,7 @@ uint64_t Board::generate_pseudo_rook_moves(const Square &from, const PieceColor 
 
 void Board::add_pseudo_rook_moves(const Square &from,
                                   Board::MoveVec &moves) const {
-  uint64_t all_moves = generate_pseudo_rook_moves(from, turn_);
+  uint64_t all_moves = generate_pseudo_rook_moves(from);
   while (all_moves) {
     Square to = Square::fromIndex(pop_lsb(all_moves)).value();
     moves.push_back(Move(from, to));
@@ -849,7 +849,7 @@ bool Board::check_knight_to_square(const Square &to,
 
 bool Board::check_bishop_and_queen_to_square(const Square &to,
                                              const PieceColor color) const {
-  uint64_t all_moves = generate_pseudo_bishop_moves(to, color);
+  uint64_t all_moves = generate_pseudo_bishop_moves(to);
   all_moves &= get_bishops_and_queens(color);
   if (all_moves) {
     return true;
@@ -859,7 +859,7 @@ bool Board::check_bishop_and_queen_to_square(const Square &to,
 
 bool Board::check_rook_and_queen_to_square(const Square &to,
                                            const PieceColor color) const {
-  uint64_t all_moves = generate_pseudo_rook_moves(to, color);
+  uint64_t all_moves = generate_pseudo_rook_moves(to);
   all_moves &= get_rooks_and_queens(color);
   if (all_moves) {
     return true;
@@ -1089,7 +1089,7 @@ int Board::pieceSquareTablesScores() const {
   return score;
 }
 
-int Board::calculateScore() const {
+int Board::calculateScore() {
   int score = materialScores();
   score += pieceSquareTablesScores();
   if (turn_ == maximize_color_) {
