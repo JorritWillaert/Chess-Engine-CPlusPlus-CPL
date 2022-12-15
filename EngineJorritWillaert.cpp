@@ -67,16 +67,16 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
-      Move *newMove = new Move(move.from(), move.to(), move.promotion());
-      result.pv.addFront(*newMove);
+      Move newMove = Move(move.from(), move.to(), move.promotion());
+      result.pv.addFront(newMove);
       return result;
     }
     if (prevResult.score >= beta) {
       result.score = beta;
       result.pv = bestResult.pv;
-      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+      Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                               moves[best_i].promotion());
-      result.pv.addFront(*newMove);
+      result.pv.addFront(newMove);
       return result;
     }
     if (prevResult.score > alpha) {
@@ -92,9 +92,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   // } else {
     result.score = alpha;
     result.pv = bestResult.pv;
-    Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+    Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
-    result.pv.addFront(*newMove);
+    result.pv.addFront(newMove);
     return result;
   // }
 }
@@ -144,16 +144,16 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     if (prevResult.score < -50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
-      Move *newMove = new Move(move.from(), move.to(), move.promotion());
-      result.pv.addFront(*newMove);
+      Move newMove = Move(move.from(), move.to(), move.promotion());
+      result.pv.addFront(newMove);
       return result;
     }
     if (prevResult.score <= alpha) {
       result.score = alpha;
       result.pv = bestResult.pv;
-      Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+      Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                               moves[best_i].promotion());
-      result.pv.addFront(*newMove);
+      result.pv.addFront(newMove);
       return result;
     }
     if (prevResult.score < beta) {
@@ -169,9 +169,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   // } else {
     result.score = beta;
     result.pv = bestResult.pv;
-    Move *newMove = new Move(moves[best_i].from(), moves[best_i].to(),
+    Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
-    result.pv.addFront(*newMove);
+    result.pv.addFront(newMove);
     return result;
   // }
 }
