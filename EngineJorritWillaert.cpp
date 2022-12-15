@@ -184,10 +184,8 @@ EngineJorritWillaert::pv(const Board &board,
   PrincipalVariation principVarBest;
   ResultWrapper result;
   int depthToSearch = 5;
-  int startBeta = 100000;
-  int startAlpha = -100000;
   for (int maxDepth = 1; maxDepth <= depthToSearch; maxDepth++) {
-    result = alphaBetaMax(startAlpha, 100000, 0, maxDepth, nonConstBoard);
+    result = alphaBetaMax(-100000, 100000, 0, maxDepth, nonConstBoard);
     if (result.isStalemate) {
       principVarBest = PrincipalVariation();
       principVarBest.setScore(0);
@@ -203,8 +201,7 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
       return principVarBest;
-    } else if (!(result.score > 500000) && !(result.score < -50000) && result.score > principVarBest.score()) {
-      startAlpha = result.score;
+    } else if (!(result.score > 500000) && !(result.score < -50000)) {
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
