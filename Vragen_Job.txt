@@ -1,0 +1,4 @@
+- New allocator
+- King dead -> stalemate
+- Dieper searchen -> Vindt juiste move niet meer
+- Waarom 2 keer gestart?

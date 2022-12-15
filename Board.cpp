@@ -199,7 +199,7 @@ const int KING_MIDDLE_GAME_PIECE_SQUARE_TABLE[64] = {
 -20,-30,-30,-40,-40,-30,-30,-20,
 -10,-20,-20,-20,-20,-20,-20,-10,
  20, 20,  0,  0,  0,  0, 20, 20,
- 20, 30, 10,  0,  0, 10, 30, 20
+ 20, 50, 10,  0,  0, 10, 50, 20
 };
 
 const int KING_END_GAME_PIECE_SQUARE_TABLE[64] = {
