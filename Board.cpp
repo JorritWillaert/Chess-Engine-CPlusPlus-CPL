@@ -1092,7 +1092,7 @@ int Board::pieceSquareTablesScores() const {
 int Board::calculateScore() {
   int score = materialScores();
   score += pieceSquareTablesScores();
-  if (turn_ == maximize_color_) {
+  if (maximize_color_ == PieceColor::White) {
     return score;
   } else {
     return -score;
