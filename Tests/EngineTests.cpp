@@ -7,6 +7,7 @@
 #include "Fen.hpp"
 #include "Board.hpp"
 
+#include <iostream>
 static std::unique_ptr<Engine> createEngine() {
     return EngineFactory::createEngine();
 }
@@ -19,6 +20,9 @@ static void testGameEnd(const char* fen, bool isMate) {
     REQUIRE(board.has_value());
 
     auto pv = engine->pv(board.value());
+    std::cout << pv << std::endl;
+    std::cout << pv.isMate() << std::endl;
+    std::cout << pv.score() << std::endl;
 
     REQUIRE(pv.isMate() == isMate);
     REQUIRE(pv.score() == 0);

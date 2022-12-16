@@ -32,7 +32,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   result.isStalemate = false;
   result.pv = PrincipalVariation();
   if (board.myKingDead()) {
-    result.score = -50000 - depth;
+    result.score = -50000 - depth + 2; // Was mate 2 moves earlier
     return result;
   }
   if (depth == maxDepth) {
@@ -55,11 +55,11 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
-    // if (newBoard.isCheck(board.turn())) {
-    //   continue;
-    // }
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
+    // if (!(prevResult.score == 50000 + depth - 1)) {
+    //   noStalemateFound = true;
+    // }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -81,7 +81,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if (!noStalemateFound) {
+  // if ((!noStalemateFound && !board.isCheck(board.turn())) || bestResult.isStalemate) {
   //   result.score = 0;
   //   result.isStalemate = true;
   //   return result;
@@ -103,7 +103,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   result.isStalemate = false;
   result.pv = PrincipalVariation();
   if (board.myKingDead()) {
-    result.score = 50000 + depth;
+    result.score = 50000 + depth - 2; // Was mate 2 moves earlier
     return result;
   }
   if (depth == maxDepth) {
@@ -128,7 +128,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (!prevResult.isStalemate) {
+    // if (!(prevResult.score == -50000 - depth + 1)) {
     //   noStalemateFound = true;
     // }
     if (prevResult.score < -50000) {
@@ -152,7 +152,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if (!noStalemateFound) {
+  // if ((!noStalemateFound && !board.isCheck(board.turn())) || bestResult.isStalemate) {
   //   result.score = 0;
   //   result.isStalemate = true;
   //   return result;
@@ -181,17 +181,17 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setScore(0);
       return principVarBest;
     }
-    if (result.score > 50000) {
-      principVarBest = result.pv;
+    if (result.score >= 50000) {
+      principVarBest = PrincipalVariation();
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
       break;
-    } else if (result.score < -50000) {
-      principVarBest = result.pv;
+    } else if (result.score <= -50000) {
+      principVarBest = PrincipalVariation();
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
-      return principVarBest;
-    } else if (!(result.score > 500000) && !(result.score < -50000)) {
+      break;
+    } else {
       principVarBest = result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
