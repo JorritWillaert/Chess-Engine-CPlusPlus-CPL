@@ -24,6 +24,7 @@ public:
   void addBack(const Move &move);
   void setMate(const bool mate);
   void setScore(const int score);
+  void removeLastTwoMoves();
 
   std::size_t length() const;
   MoveIter begin() const;

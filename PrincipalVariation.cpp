@@ -29,6 +29,11 @@ void PrincipalVariation::setMate(const bool mate) { isMate_ = mate; }
 
 void PrincipalVariation::setScore(const int score) { score_ = score; }
 
+void PrincipalVariation::removeLastTwoMoves() {
+  moves_.pop_back();
+  moves_.pop_back();
+}
+
 std::ostream &operator<<(std::ostream &os, const PrincipalVariation &pv) {
   os << "PV: ";
   for (const Move move : pv) {

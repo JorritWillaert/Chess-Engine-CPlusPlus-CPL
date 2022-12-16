@@ -193,16 +193,19 @@ EngineJorritWillaert::pv(const Board &board,
     }
     if (result.score >= 50000) {
       principVarBest = result.pv;
+      principVarBest.removeLastTwoMoves();
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
       break;
     } else if (result.score <= -50000) {
       principVarBest = result.pv;
+      principVarBest.removeLastTwoMoves();
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
       break;
     } else {
       principVarBest = result.pv;
+      principVarBest.removeLastTwoMoves();
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
     }
