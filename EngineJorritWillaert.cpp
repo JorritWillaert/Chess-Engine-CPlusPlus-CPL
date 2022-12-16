@@ -32,7 +32,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   result.isStalemate = false;
   result.pv = PrincipalVariation();
   if (board.myKingDead()) {
-  // if (board.isMate(board.turn())) {
     result.score = -50000 - depth;
     return result;
   }
@@ -61,23 +60,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     // }
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (move.from() == Square::F3 && move.to() == Square::E5 && depth == 0) {
-    //   std::cout << "Score prevresult: " << prevResult.score << std::endl;
-    //   std::cout << "PV: " << prevResult.pv << std::endl;
-    //   Board copyBoard = newBoard;
-    //   std::cout << copyBoard << std::endl;
-    //   for (const Move move : prevResult.pv) {
-    //     copyBoard.makeMove(move);
-    //     std::cout << copyBoard << std::endl;
-    //     std::cout << copyBoard.calculateScore() << std::endl;
-    //   }
-    // }
-    // if (move.from() == Square::F3 && move.to() == Square::G1 && depth == 0) {
-    //   std::cout << "Score new: " << prevResult.score << std::endl;
-    // }
-    // if (!prevResult.isStalemate) {
-    //   noStalemateFound = true;
-    // }
     if (prevResult.score > 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -120,13 +102,10 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  // std::cout << "MIN" << std::endl;
   if (board.myKingDead()) {
-  // if (board.isMate(board.turn())) {
     result.score = 50000 + depth;
     return result;
   }
-  // std::cout << "End MIN" << std::endl;
   if (depth == maxDepth) {
     result.score = board.calculateScore();
     return result;
@@ -147,9 +126,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
-    // if (newBoard.isCheck(board.turn())) {
-    //   continue;
-    // }
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
     // if (!prevResult.isStalemate) {
@@ -195,7 +171,6 @@ EngineJorritWillaert::pv(const Board &board,
                          const TimeInfo::Optional &timeInfo) {
   Board nonConstBoard = board;
   nonConstBoard.setMaximizerColor(board.turn());
-  // std::cout << "Turn: " << board.turn() << std::endl;
   PrincipalVariation principVarBest;
   ResultWrapper result;
   int depthToSearch = 5;
@@ -217,15 +192,11 @@ EngineJorritWillaert::pv(const Board &board,
       principVarBest.setScore(result.score + 50000);
       return principVarBest;
     } else if (!(result.score > 500000) && !(result.score < -50000)) {
-      // std::cout << "Score: " << result.score << std::endl;
       principVarBest = result.pv;
-      // std::cout << result.pv;
       principVarBest.setMate(false);
       principVarBest.setScore(result.score);
     }
   }
-  // std::cout << "Score: " << principVarBest.score() << std::endl;
-  // std::cout << principVarBest << std::endl;
   (void)timeInfo;
   return principVarBest;
 }
