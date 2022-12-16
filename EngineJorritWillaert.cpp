@@ -57,10 +57,15 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (!(prevResult.score == 50000 + depth - 1)) {
-    //   noStalemateFound = true;
+    // if (prevResult.isStalemate) {
+    //   bestResult.isStalemate = true;
+    //   break;
     // }
-    if (prevResult.score > 50000) {
+    // if (prevResult.score == -50000 - depth && !board.isCheck(board.turn())) {
+    //   continue;
+    // }
+    // noStalemateFound = true;
+    if (prevResult.score >= 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
       Move newMove = Move(move.from(), move.to(), move.promotion());
@@ -81,7 +86,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if ((!noStalemateFound && !board.isCheck(board.turn())) || bestResult.isStalemate) {
+  // if (bestResult.isStalemate) {
   //   result.score = 0;
   //   result.isStalemate = true;
   //   return result;
@@ -121,17 +126,22 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
-  // bool noStalemateFound = true;
+  // bool noStalemateFound = false;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
     newBoard.makeMove(move);
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (!(prevResult.score == -50000 - depth + 1)) {
-    //   noStalemateFound = true;
+    // if (prevResult.isStalemate) {
+    //   bestResult.isStalemate = true;
+    //   break;
     // }
-    if (prevResult.score < -50000) {
+    // if (prevResult.score == 50000 + depth && !board.isCheck(board.turn())) {
+    //   continue;
+    // }
+    // noStalemateFound = true;
+    if (prevResult.score <= -50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
       Move newMove = Move(move.from(), move.to(), move.promotion());
@@ -152,7 +162,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if ((!noStalemateFound && !board.isCheck(board.turn())) || bestResult.isStalemate) {
+  // if (bestResult.isStalemate) {
   //   result.score = 0;
   //   result.isStalemate = true;
   //   return result;
@@ -182,12 +192,12 @@ EngineJorritWillaert::pv(const Board &board,
       return principVarBest;
     }
     if (result.score >= 50000) {
-      principVarBest = PrincipalVariation();
+      principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score - 50000);
       break;
     } else if (result.score <= -50000) {
-      principVarBest = PrincipalVariation();
+      principVarBest = result.pv;
       principVarBest.setMate(true);
       principVarBest.setScore(result.score + 50000);
       break;
