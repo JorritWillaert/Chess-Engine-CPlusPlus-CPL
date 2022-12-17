@@ -62,8 +62,13 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       bestResult.isStalemate = true;
       break;
     }
-    if (prevResult.score == -50000 - depth && !board.isCheck(board.turn()) && !newBoard.isCheck(!board.turn()) && !board.isCheck(!board.turn())) {
-      continue;
+    if (prevResult.score == -50000 - depth) {
+      Board testBoard = board;
+      testBoard.setTurn(!testBoard.turn());
+      ResultWrapper testWrapper = alphaBetaMin(alpha, beta, depth + 1, depth + 2, testBoard);
+      if (testWrapper.score != -50000 - depth) {
+        continue;
+      }
     }
     noStalemateFound = true;
     if (prevResult.score >= 50000) {
@@ -139,8 +144,13 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       bestResult.isStalemate = true;
       break;
     }
-    if (prevResult.score == 50000 + depth && !board.isCheck(board.turn()) && !newBoard.isCheck(!board.turn()) && !board.isCheck(!board.turn())) {
-      continue;
+    if (prevResult.score == 50000 + depth) {
+      Board testBoard = board;
+      testBoard.setTurn(!testBoard.turn());
+      ResultWrapper testWrapper = alphaBetaMax(alpha, beta, depth + 1, depth + 2, testBoard);
+      if (testWrapper.score != 50000 + depth) {
+        continue;
+      }
     }
     noStalemateFound = true;
     if (prevResult.score <= -50000) {
