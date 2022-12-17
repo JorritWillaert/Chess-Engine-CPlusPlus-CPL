@@ -957,23 +957,10 @@ void Board::add_pseudo_king_moves(const Square &from,
   }
 }
 
-void Board::pseudoLegalToLegal(MoveVec &moves) const {
-  MoveVec legal_moves = std::vector<Move>();
-  for (const Move move : moves) {
-    Board copyBoard = *this;
-    copyBoard.makeMove(move);
-    if (!copyBoard.isCheck(turn_)) {
-      legal_moves.push_back(move);
-    }
-  }
-  moves = legal_moves;
-}
-
 void Board::pseudoLegalMoves(MoveVec &moves) const {
   for (int i = 0; i < 64; i++) {
     pseudoLegalMovesFrom(Square::fromIndex(i).value(), moves);
   }
-  pseudoLegalToLegal(moves);
 }
 
 void Board::pseudoLegalMovesFrom(const Square &from,
