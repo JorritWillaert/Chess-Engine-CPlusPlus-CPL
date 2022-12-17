@@ -32,6 +32,7 @@ public:
 
   void pseudoLegalMoves(MoveVec &moves) const;
   void pseudoLegalMovesFrom(const Square &from, MoveVec &moves) const;
+  void pseudoLegalToLegal(MoveVec &moves) const;
 
   void add_pseudo_pawn_moves(const Square &from, Board::MoveVec &moves,
                              const PieceColor color) const;

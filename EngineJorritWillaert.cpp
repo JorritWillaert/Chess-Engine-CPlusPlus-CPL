@@ -31,7 +31,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  if (board.myKingDead()) {
+  if (board.myKingDead() || board.isMate(board.turn())) {
     result.score = -50000 - depth + 2; // Was mate 2 moves earlier
     return result;
   }
@@ -107,7 +107,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   result.score = 0;
   result.isStalemate = false;
   result.pv = PrincipalVariation();
-  if (board.myKingDead()) {
+  if (board.myKingDead() || board.isMate(board.turn())) {
     result.score = 50000 + depth - 2; // Was mate 2 moves earlier
     return result;
   }
