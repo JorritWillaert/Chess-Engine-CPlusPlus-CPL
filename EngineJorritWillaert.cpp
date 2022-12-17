@@ -42,7 +42,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
   if (moves.empty()) {
-    std::cout << "Empty" << std::endl;
     result.score = 0;
     result.isStalemate = true;
     return result;
@@ -52,7 +51,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   bestResult.pv = PrincipalVariation();
   bestResult.isStalemate = false;
   int best_i = 0;
-  bool noStalemateFound = false;
+  bool noStalemateFound = true;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
@@ -63,10 +62,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       bestResult.isStalemate = true;
       break;
     }
-    if (prevResult.score == -50000 - depth && !board.isCheck(board.turn())) {
-      continue;
+    if (!newBoard.isCheck(board.turn())) {
+      noStalemateFound = false;
     }
-    noStalemateFound = true;
     if (prevResult.score >= 50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -88,8 +86,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  if (bestResult.isStalemate || !noStalemateFound) {
-    // std::cout << "Stalemate" << std::endl;
+  if (bestResult.isStalemate || (noStalemateFound && !board.isCheck(board.turn()))) {
     result.score = 0;
     result.isStalemate = true;
     return result;
@@ -121,7 +118,6 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
   if (moves.empty()) {
-    std::cout << "Empty" << std::endl;
     result.score = 0;
     result.isStalemate = true;
     return result;
@@ -131,7 +127,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
   bestResult.isStalemate = false;
-  bool noStalemateFound = false;
+  bool noStalemateFound = true;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
     Board newBoard = board;
@@ -142,10 +138,9 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       bestResult.isStalemate = true;
       break;
     }
-    if (prevResult.score == 50000 + depth && !board.isCheck(board.turn())) {
-      continue;
+    if (!newBoard.isCheck(board.turn())) {
+      noStalemateFound = false;
     }
-    noStalemateFound = true;
     if (prevResult.score <= -50000) {
       result.score = prevResult.score;
       result.pv = prevResult.pv;
@@ -167,7 +162,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  if (bestResult.isStalemate || !noStalemateFound) {
+  if (bestResult.isStalemate || (noStalemateFound && !board.isCheck(board.turn()))) {
     result.score = 0;
     result.isStalemate = true;
     return result;
