@@ -42,6 +42,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
   if (moves.empty()) {
+    std::cout << "Empty" << std::endl;
     result.score = 0;
     result.isStalemate = true;
     return result;
@@ -49,6 +50,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
   orderMoves(moves, board);
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
+  bestResult.isStalemate = false;
   int best_i = 0;
   // bool noStalemateFound = false;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
@@ -86,18 +88,19 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if (bestResult.isStalemate) {
-  //   result.score = 0;
-  //   result.isStalemate = true;
-  //   return result;
-  // } else {
+  if (bestResult.isStalemate) {
+    // std::cout << "Stalemate" << std::endl;
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  } else {
     result.score = alpha;
     result.pv = bestResult.pv;
     Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
     result.pv.addFront(newMove);
     return result;
-  // }
+  }
 }
 
 ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
@@ -118,6 +121,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   Board::MoveVec moves;
   board.pseudoLegalMoves(moves);
   if (moves.empty()) {
+    std::cout << "Empty" << std::endl;
     result.score = 0;
     result.isStalemate = true;
     return result;
@@ -126,6 +130,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
   int best_i = 0;
   ResultWrapper bestResult;
   bestResult.pv = PrincipalVariation();
+  bestResult.isStalemate = false;
   // bool noStalemateFound = false;
   for (std::vector<int>::size_type i = 0; i < moves.size(); i++) {
     Move move = moves[i];
@@ -162,18 +167,18 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       best_i = i;
     }
   }
-  // if (bestResult.isStalemate) {
-  //   result.score = 0;
-  //   result.isStalemate = true;
-  //   return result;
-  // } else {
+  if (bestResult.isStalemate) {
+    result.score = 0;
+    result.isStalemate = true;
+    return result;
+  } else {
     result.score = beta;
     result.pv = bestResult.pv;
     Move newMove = Move(moves[best_i].from(), moves[best_i].to(),
                             moves[best_i].promotion());
     result.pv.addFront(newMove);
     return result;
-  // }
+  }
 }
 
 PrincipalVariation
