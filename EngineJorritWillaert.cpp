@@ -66,7 +66,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
       Board testBoard = board;
       testBoard.setTurn(!testBoard.turn());
       ResultWrapper testWrapper = alphaBetaMin(alpha, beta, depth + 1, depth + 2, testBoard);
-      if (testWrapper.score != -50000 - depth) {
+      if (testWrapper.score != -50000 - depth && depth <= 1) {
         continue;
       }
     }
@@ -148,7 +148,7 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
       Board testBoard = board;
       testBoard.setTurn(!testBoard.turn());
       ResultWrapper testWrapper = alphaBetaMax(alpha, beta, depth + 1, depth + 2, testBoard);
-      if (testWrapper.score != 50000 + depth) {
+      if (testWrapper.score != 50000 + depth && depth <= 1) {
         continue;
       }
     }
