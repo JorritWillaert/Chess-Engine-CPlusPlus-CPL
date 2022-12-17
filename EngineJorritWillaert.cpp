@@ -59,10 +59,10 @@ ResultWrapper EngineJorritWillaert::alphaBetaMax(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     ResultWrapper prevResult =
         alphaBetaMin(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (prevResult.isStalemate) {
-    //   bestResult.isStalemate = true;
-    //   break;
-    // }
+    if (prevResult.isStalemate) {
+      bestResult.isStalemate = true;
+      break;
+    }
     // if (prevResult.score == -50000 - depth && !board.isCheck(board.turn())) {
     //   continue;
     // }
@@ -138,10 +138,10 @@ ResultWrapper EngineJorritWillaert::alphaBetaMin(int alpha, int beta, int depth,
     newBoard.makeMove(move);
     ResultWrapper prevResult =
         alphaBetaMax(alpha, beta, depth + 1, maxDepth, newBoard);
-    // if (prevResult.isStalemate) {
-    //   bestResult.isStalemate = true;
-    //   break;
-    // }
+    if (prevResult.isStalemate) {
+      bestResult.isStalemate = true;
+      break;
+    }
     // if (prevResult.score == 50000 + depth && !board.isCheck(board.turn())) {
     //   continue;
     // }
